@@ -3,12 +3,16 @@ require('dotenv').config();
 const app = express();
 const passport = require('passport');
 const session = require('express-session');
+const cors = require('cors');
 require('./auth.js');
 
 const PORT = 3000;
 
 
-
+app.use(cors({
+	origin: 'http://localhost:8080',
+	credentials: true
+}));
 
 app.use(
 	session({
