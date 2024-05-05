@@ -5,8 +5,25 @@ import HomeView from './views/HomeView.vue';
 import LoginView from './views/LoginView.vue';
 
 const routes = [
-    { path: '/', component: LoginView },
-    { path: '/home', component: HomeView, meta: { requiresAuth: true }}
+    {
+      path: '/',
+      component: LoginView
+    },
+    {
+      path: '/home',
+      component: HomeView,
+      beforeEnter: (to, from, next) => {
+        axios.get('http://localhost:3000/auth/user-data', { withCredentials: true })
+        .then(response => {
+          console.log("Received data", response.data);
+          next();
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+          next('/')});
+      },
+      meta: { requiresAuth: true }
+    }
 ];
 
 const router = createRouter({
