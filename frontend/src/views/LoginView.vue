@@ -1,21 +1,14 @@
 <template>
     <div class="container">
-        <Button label="Login with Google" icon="pi pi-check" iconPos="right" v-on:click="googleLogin" />
+        <Button label="Login with Google" icon="pi pi-check" iconPos="right" @click="googleLogin" />
     </div>
 </template>
 
-<script>
+<script setup>
 import Button from 'primevue/button';
 
-export default {
-  name: 'LoginView',
-  components: {
-    Button
-  },
-  methods: {
-    googleLogin() {
+const googleLogin = () => {
       window.open('http://localhost:3000/auth/google', '_self');
-    }
-  }
 }
+
 </script>

@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router';
 import axios from 'axios';
+import { useUserStore } from './store';
 
 import HomeView from './views/HomeView.vue';
 import LoginView from './views/LoginView.vue';
@@ -12,15 +13,12 @@ const routes = [
     {
       path: '/home',
       component: HomeView,
-      beforeEnter: (to, from, next) => {
-        axios.get('http://localhost:3000/auth/user-data', { withCredentials: true })
-        .then(response => {
-          console.log("Received data", response.data);
-          next();
-        })
-        .catch(error => {
-          console.error('Error fetching user data:', error);
-          next('/')});
+      beforeEnter: async (to, from, next) => {
+        const userStore = useUserStore();
+        const user = await axios.get('http://localhost:3000/auth/profile', { withCredentials: true });
+        //console.log('user:', user.data[0].username);
+        userStore.userData = user.data[0].username;
+        next();
       },
       meta: { requiresAuth: true }
     }
@@ -32,12 +30,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+    const userStore = useUserStore();
     if (to.matched.some(record => record.meta.requiresAuth)) {
         // Check if user is authenticated
-        axios.get('http://localhost:3000/auth/profile', { withCredentials: true })
+        axios.get('http://localhost:3000/auth/check-auth', { withCredentials: true })
           .then(response => {
             if (response.data.authenticated) {
               // User is authenticated, proceed to the route
+              userStore.authenticated = true;
               next();
             } else {
               // User is not authenticated, redirect to login page

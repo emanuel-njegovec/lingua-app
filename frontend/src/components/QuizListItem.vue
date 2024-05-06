@@ -8,7 +8,6 @@
             <Button label="Pogledaj kviz">Pogledaj</Button>
         </template>    
     </Card>
-
 </template>
 
 <script setup>

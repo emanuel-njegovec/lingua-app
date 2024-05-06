@@ -10,24 +10,6 @@
                     <AccordionTab header="Dodani kvizovi">
                         <QuizListItem></QuizListItem>
                     </AccordionTab>
-                    <AccordionTab header="Dodani kvizovi">
-                        <QuizListItem></QuizListItem>
-                    </AccordionTab>
-                    <AccordionTab header="Dodani kvizovi">
-                        <QuizListItem></QuizListItem>
-                    </AccordionTab>
-                    <AccordionTab header="Dodani kvizovi">
-                        <QuizListItem></QuizListItem>
-                    </AccordionTab>
-                    <AccordionTab header="Dodani kvizovi">
-                        <QuizListItem></QuizListItem>
-                    </AccordionTab>
-                    <AccordionTab header="Dodani kvizovi">
-                        <QuizListItem></QuizListItem>
-                    </AccordionTab>
-                    <AccordionTab header="Dodani kvizovi">
-                        <QuizListItem></QuizListItem>
-                    </AccordionTab>
                 </Accordion>
             </TabPanel>
             <TabPanel header="Kvizovi">
@@ -41,7 +23,7 @@
                 </Accordion>
             </TabPanel>
             <TabPanel header="Profil">
-                <h1>Profil</h1>
+                <ProfileComponent></ProfileComponent>
             </TabPanel>
         </TabView>
     </div>
@@ -56,6 +38,7 @@ import AccordionTab from 'primevue/accordiontab';
 import QuizListItem from '../components/QuizListItem.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import ProfileComponent from '../components/ProfileComponent.vue';
 
 </script>
 

@@ -15,12 +15,14 @@ router.get('/google/callback', passport.authenticate(
     }
 );
 
-router.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
+router.get('/logout', function(req, res, next) {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('http://localhost:8080');
+  });
 });
 
-router.get('/profile', (req, res) => {
+router.get('/check-auth', (req, res) => {
     if (req.isAuthenticated()) {
       // User is authenticated, respond with authenticated status
       res.json({ authenticated: true });
@@ -30,11 +32,11 @@ router.get('/profile', (req, res) => {
     }}
 );
 
-router.get('/user-data', async (req, res) => {
+router.get('/profile', async (req, res) => {
     if (req.isAuthenticated()) {
       try {
         const { rows } = await pool.query(
-          "SELECT users.username, quizzes.* FROM users JOIN quizzes ON users.id = quizzes.user_id WHERE users.id=$1",
+          "SELECT users.username, quizzes.* FROM users LEFT JOIN quizzes ON users.id = quizzes.user_id WHERE users.id=$1",
           [req.user.id]
         );
         console.log('currentUserQuery:', rows);
