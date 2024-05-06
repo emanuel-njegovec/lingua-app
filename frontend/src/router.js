@@ -16,7 +16,7 @@ const routes = [
       beforeEnter: async (to, from, next) => {
         const userStore = useUserStore();
         const user = await axios.get('http://localhost:3000/auth/profile', { withCredentials: true });
-        //console.log('user:', user.data[0].username);
+        //console.log('user:', user.data);
         userStore.userData = user.data[0].username;
         next();
       },

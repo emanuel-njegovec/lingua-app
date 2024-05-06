@@ -6,6 +6,9 @@ const session = require('express-session');
 const cors = require('cors');
 require('./auth.js');
 
+const authRouter = require('./routes/authRouter');
+const apiRouter = require('./routes/apiRouter');
+
 const PORT = 3000;
 
 
@@ -28,8 +31,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const authRouter = require('./routes/authRouter');
 app.use('/auth', authRouter);
+app.use('/api', apiRouter);
 
 app.listen(PORT, (error) =>{ 
 	if(!error) 
