@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 require('dotenv').config();
 const app = express();
 const passport = require('passport');
@@ -11,6 +12,7 @@ const apiRouter = require('./routes/apiRouter');
 
 const PORT = 3000;
 
+app.use(bodyParser.json());
 
 app.use(cors({
 	origin: 'http://localhost:8080',

@@ -77,6 +77,29 @@ router.post('/quiz', async (req, res) => {
     }
 });
 
+router.put('/update-quiz/:quiz_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        //console.log(req.body, req.params.quiz_id);
+        try {
+            for (let el in req.body) {
+                console.log('el:', el);
+                console.log('req.body[el]:', req.body[el]);
+                const { rows } = await pool.query(
+                    `UPDATE quizzes SET ${el}=$1 WHERE quiz_id=$2`,
+                    [req.body[el], req.params.quiz_id]
+                );
+                console.log('currentUserQuery:', rows);
+            }   
+            res.json({});
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
 router.delete('/quiz/:quiz_id', async (req, res) => {
     if (req.isAuthenticated()) {
         try {
