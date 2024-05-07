@@ -4,6 +4,7 @@ import { useUserStore } from './store';
 
 import HomeView from './views/HomeView.vue';
 import LoginView from './views/LoginView.vue';
+import QuizView from './views/QuizView.vue';
 
 const routes = [
     {
@@ -17,9 +18,15 @@ const routes = [
         const userStore = useUserStore();
         const user = await axios.get('http://localhost:3000/auth/profile', { withCredentials: true });
         //console.log('user:', user.data);
-        userStore.userData = user.data[0].username;
+        userStore.username = user.data[0].username;
+        userStore.userID = user.data[0].user_id;
         next();
       },
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/quiz/:quiz_id',
+      component: QuizView,
       meta: { requiresAuth: true }
     }
 ];

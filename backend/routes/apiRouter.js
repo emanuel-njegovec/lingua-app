@@ -40,4 +40,59 @@ router.get('/all-quizzes', async (req, res) => {
     }
 });
 
+router.get('/quiz/:quiz_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        try {
+            const { rows } = await pool.query(
+                "SELECT * FROM quizzes LEFT JOIN questions ON quizzes.quiz_id = questions.quiz_id WHERE quizzes.quiz_id=$1",
+                [req.params.quiz_id]
+            );
+            console.log('currentUserQuery:', rows);
+            res.json(rows);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+})
+
+router.post('/quiz', async (req, res) => {
+    console.log('here');
+    if (req.isAuthenticated()) {
+        try {
+            const { rows } = await pool.query(
+                "INSERT INTO quizzes (user_id) VALUES ($1) RETURNING quiz_id",
+                [req.user.id]
+            );
+            console.log('currentUserQuery:', rows);
+            res.json(rows);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
+router.delete('/quiz/:quiz_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        try {
+            const { rows } = await pool.query(
+                "DELETE FROM quizzes WHERE quiz_id=$1",
+                [req.params.quiz_id]
+            );
+            console.log('currentUserQuery:', rows);
+            res.json(rows);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
 module.exports = router;

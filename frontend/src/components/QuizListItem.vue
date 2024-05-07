@@ -5,20 +5,40 @@
         </template>
         <template #content>
             <p>{{ quiz.description }}</p>
-            <Button label="Pogledaj kviz">Pogledaj</Button>
+            <Button icon="pi pi-pencil" aria-label="Edit" @click="getQuiz"></Button>
+            <Button icon="pi pi-trash" aria-label="Delete" @click="deleteQuiz"></Button>
+            <Button icon="pi pi-play" aria-label="Start"></Button>
         </template>    
     </Card>
 </template>
 
 <script setup>
 import Card from 'primevue/card';
-import { defineProps } from 'vue';
+import Button from 'primevue/button';
+import { defineProps, defineEmits } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
-// eslint-disable-next-line
+const router = useRouter();
+
 const props = defineProps({
     quiz: Object
 });
+const emit = defineEmits(['remove']);
 //console.log('here', props.quiz);
+
+const getQuiz = () => {
+    router.push('/quiz/' + props.quiz.quiz_id);
+}
+
+const deleteQuiz = async () => {
+    try {
+        await axios.delete(`http://localhost:3000/api/quiz/${props.quiz.quiz_id}`, { withCredentials: true });
+        emit('remove', props.quiz.quiz_id);
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <h1>Korisnički profil</h1>
-    <div>{{ user.userData }}</div>
+    <div>{{ user.username }}</div>
     <Button label="Odjavi se" @click="logout" />
 </template>
 
@@ -12,7 +12,8 @@ import Button from 'primevue/button';
 const user = useUserStore();
 
 const logout = () => {
-    user.userData = null;
+    user.username = null;
+    user.userID = null;
     window.location.href = 'http://localhost:3000/auth/logout';
 }
 
