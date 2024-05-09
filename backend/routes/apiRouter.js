@@ -44,7 +44,11 @@ router.get('/quiz/:quiz_id', async (req, res) => {
     if (req.isAuthenticated()) {
         try {
             const { rows } = await pool.query(
-                "SELECT * FROM quizzes LEFT JOIN questions ON quizzes.quiz_id = questions.quiz_id WHERE quizzes.quiz_id=$1",
+                `SELECT qz.*, questions.*, multiple_choice_questions.* 
+                FROM quizzes qz
+                LEFT JOIN questions ON qz.quiz_id = questions.quiz_id 
+                LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
+                WHERE qz.quiz_id=$1`,
                 [req.params.quiz_id]
             );
             console.log('currentUserQuery:', rows);
@@ -109,6 +113,59 @@ router.delete('/quiz/:quiz_id', async (req, res) => {
             );
             console.log('currentUserQuery:', rows);
             res.json(rows);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
+router.get('/question/:question_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        try {
+            const { rows } = await pool.query(
+                `SELECT questions.*, multiple_choice_questions.*
+                FROM questions
+                LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
+                WHERE questions.question_id=$1`,
+                [req.params.question_id]
+            );
+            console.log('currentUserQuery:', rows);
+            res.json(rows);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
+router.put('/update-question/:question_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        console.log(req.body);
+        try {
+            for (let el in req.body) {
+                console.log('el:', el);
+                console.log('req.body[el]:', req.body[el]);
+                if (el === 'question_text') {
+                    const { rows } = await pool.query(
+                        `UPDATE questions SET ${el}=$1 WHERE question_id=$2`,
+                        [req.body[el], req.params.question_id]
+                    );
+                    console.log('currentUserQuery:', rows);
+                }
+                else if (req.body.q_type === 'multiple_choice' && el !== 'q_type') {
+                    const { rows } = await pool.query(
+                        `UPDATE multiple_choice_questions SET ${el}=$1 WHERE question_id=$2`,
+                        [req.body[el], req.params.question_id]
+                    );
+                    console.log('currentUserQuery:', rows);
+                }
+            }   
+            res.json({});
         } catch (error) {
             console.error('Error fetching user data:', error);
             res.json({});

@@ -5,6 +5,7 @@ import { useUserStore } from './store';
 import HomeView from './views/HomeView.vue';
 import LoginView from './views/LoginView.vue';
 import QuizView from './views/QuizView.vue';
+import QuestionView from './views/QuestionView.vue';
 
 const routes = [
     {
@@ -27,7 +28,14 @@ const routes = [
     {
       path: '/quiz/:quiz_id',
       component: QuizView,
-      meta: { requiresAuth: true }
+      name: 'quiz',
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/quiz/:quiz_id/question/:question_id',
+      component: QuestionView,
+      name: 'question',
+      meta: { requiresAuth: true },
     }
 ];
 
