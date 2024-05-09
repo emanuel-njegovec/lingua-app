@@ -31,7 +31,7 @@ import axios from 'axios';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const param = route.params.quiz_id;
+const param = route.params.question_id;
 
 // eslint-disable-next-line
 const props = defineProps({

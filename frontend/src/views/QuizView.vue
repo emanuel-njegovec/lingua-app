@@ -6,15 +6,15 @@
                 <InputText v-model="quizData.quiz_name" placeholder="Enter the name of the quiz" @input="handleInputChange" />
                 <Textarea v-model="quizData.description" placeholder="Enter the description of the quiz" @input="handleInputChange" />
             </div>
-            <ul>
-                <QuestionListItem v-for="question in quiz" :key="question.question_id" :question="question"></QuestionListItem>
+            <ul v-if="quiz[0] && quiz[0].question_id">
+                <QuestionListItem v-for="question in quiz" :key="question.question_id" :question="question" @remove_question="removeItem"></QuestionListItem>
             </ul>
         </div>
         <Button icon="pi pi-plus" @click="visible = true"></Button>
         <Dialog v-model:visible="visible" modal header="Odaberi vrstu pitanja">
-            <Button label="Ponuđeni odgovori"></Button>
-            <Button label="Upisivanje odgovora"></Button>
-            <Button label="Nadopunjavanje"></Button>
+            <Button label="Ponuđeni odgovori" @click="newQuestion('multiple_choice')"></Button>
+            <Button label="Upisivanje odgovora" @click="newQuestion('write_in')"></Button>
+            <Button label="Nadopunjavanje" @click="newQuestion('fill_in')"></Button>
         </Dialog>
     </div>
 </template>
@@ -28,8 +28,9 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter();
 const route = useRoute();
 const param = route.params.quiz_id;
 
@@ -41,6 +42,26 @@ const quizData = ref({
     description: ''
 });
 
+const newQuestion = async (q_type) => {
+    try {
+        // eslint-disable-next-line
+        const response = await axios.post('http://localhost:3000/api/question', { param, q_type }, { withCredentials: true });
+        console.log('question_id', response.data);
+        const question_id = response.data[0].question_id;
+        
+        router.push(`/quiz/${param}/question/${question_id}`);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const removeItem = (questionToRemove) => {
+    console.log('remove', questionToRemove);
+    const index = quiz.value.findIndex(question => question.question_id === questionToRemove);
+    if (index !== -1) {
+        quiz.value.splice(index, 1);
+    }
+};
 
 
 onMounted(async () => {
@@ -48,6 +69,7 @@ onMounted(async () => {
         const response = await axios.get(`http://localhost:3000/api/quiz/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         quiz.value = response.data;
+        console.log(quiz.value);
         quizData.value.quiz_name = quiz.value[0].quiz_name;
         quizData.value.description = quiz.value[0].description;
     } catch (error) {

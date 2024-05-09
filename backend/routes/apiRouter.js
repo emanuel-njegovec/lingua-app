@@ -122,6 +122,32 @@ router.delete('/quiz/:quiz_id', async (req, res) => {
     }
 });
 
+router.post('/question', async (req, res) => {
+    console.log('here', req.body);
+    if (req.isAuthenticated()) {
+        try {
+            const { rows } = await pool.query(
+                "INSERT INTO questions (quiz_id, q_type) VALUES ($1, $2) RETURNING question_id",
+                [req.body.param, req.body.q_type]
+            );
+            if (req.body.q_type === 'multiple_choice') {
+                const { rows2 } = await pool.query(
+                    "INSERT INTO multiple_choice_questions (question_id) VALUES ($1)",
+                    [rows[0].question_id]
+                );
+                console.log('currenrrererer:', rows2);
+            }
+            console.log('currentUserQuery:', rows);
+            res.json(rows);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
 router.get('/question/:question_id', async (req, res) => {
     if (req.isAuthenticated()) {
         try {
@@ -166,6 +192,30 @@ router.put('/update-question/:question_id', async (req, res) => {
                 }
             }   
             res.json({});
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.json({});
+        }
+    } else {
+        res.json({});
+    }
+});
+
+router.delete('/question/:question_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        try {
+            const { rows } = await pool.query(
+                "DELETE FROM multiple_choice_questions WHERE question_id=$1",
+                [req.params.question_id]
+            );
+            const { rows2 } = await pool.query(
+                "DELETE FROM questions WHERE question_id=$1",
+                [req.params.question_id]
+            );
+            
+            console.log('currentUserQuery:', rows);
+            console.log('currentUserQuery:', rows2);
+            res.json(rows);
         } catch (error) {
             console.error('Error fetching user data:', error);
             res.json({});
