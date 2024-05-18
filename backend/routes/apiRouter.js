@@ -1,84 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const { fetchDataFromDB, pool } = require('../db');
 
-router.get('/user-quizzes', async (req, res) => {
+const handleRequest = async (req, res, query, params) => {
     if (req.isAuthenticated()) {
         try {
-            const { rows } = await pool.query(
-                "SELECT * FROM quizzes WHERE quizzes.user_id=$1",
-                [req.user.id]
-            );
-            console.log('currentUserQuery:', rows);
-            res.json(rows);
+            const data = await fetchDataFromDB(query, params);
+            res.json(data);
         } catch (error) {
             console.error('Error fetching user data:', error);
-            res.json({});
+            res.status(500).json({ error: error.message });
         }
     } else {
-        // User is not authenticated, respond with an empty object
-        res.json({});
+        res.status(401).json({ error: 'User is not authenticated' });
     }
+}
+
+router.get('/user-quizzes', async (req, res) => {
+    const query = "SELECT * FROM quizzes WHERE quizzes.user_id=$1";
+    const params = [req.user.id];
+    handleRequest(req, res, query, params);
 });
 
 router.get('/all-quizzes', async (req, res) => {
-    if (req.isAuthenticated()) {
-        try {
-            const { rows } = await pool.query(
-                "SELECT * FROM quizzes WHERE quizzes.user_id!=$1",
-                [req.user.id]
-            );
-            console.log('currentUserQuery:', rows);
-            res.json(rows);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
-        }
-    } else {
-        // User is not authenticated, respond with an empty object
-        res.json({});
-    }
+    const query = "SELECT * FROM quizzes WHERE quizzes.user_id!=$1";
+    const params = [req.user.id];
+    handleRequest(req, res, query, params);
 });
 
 router.get('/quiz/:quiz_id', async (req, res) => {
-    if (req.isAuthenticated()) {
-        try {
-            const { rows } = await pool.query(
-                `SELECT qz.*, questions.*, multiple_choice_questions.* 
-                FROM quizzes qz
-                LEFT JOIN questions ON qz.quiz_id = questions.quiz_id 
-                LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
-                WHERE qz.quiz_id=$1`,
-                [req.params.quiz_id]
-            );
-            console.log('currentUserQuery:', rows);
-            res.json(rows);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
-        }
-    } else {
-        res.json({});
-    }
-})
+    const query = `SELECT qz.*, questions.*, multiple_choice_questions.* 
+                    FROM quizzes qz
+                    LEFT JOIN questions ON qz.quiz_id = questions.quiz_id 
+                    LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
+                    WHERE qz.quiz_id=$1`;
+    const params = [req.params.quiz_id];
+    handleRequest(req, res, query, params);
+});
 
 router.post('/quiz', async (req, res) => {
-    console.log('here');
-    if (req.isAuthenticated()) {
-        try {
-            const { rows } = await pool.query(
-                "INSERT INTO quizzes (user_id) VALUES ($1) RETURNING quiz_id",
-                [req.user.id]
-            );
-            console.log('currentUserQuery:', rows);
-            res.json(rows);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
-        }
-    } else {
-        res.json({});
-    }
+    const query = "INSERT INTO quizzes (user_id) VALUES ($1) RETURNING quiz_id";
+    const params = [req.user.id];
+    handleRequest(req, res, query, params);
 });
 
 router.put('/update-quiz/:quiz_id', async (req, res) => {
@@ -94,31 +57,23 @@ router.put('/update-quiz/:quiz_id', async (req, res) => {
                 );
                 console.log('currentUserQuery:', rows);
             }   
-            res.json({});
+            res.status(200).json({ message: 'Quiz updated successfully' });
         } catch (error) {
             console.error('Error fetching user data:', error);
-            res.json({});
+            res.status(500).json({ error: 'Error updating quiz' });
         }
     } else {
-        res.json({});
+        res.status(401).json({ error: 'User is not authenticated' });
     }
 });
 
 router.delete('/quiz/:quiz_id', async (req, res) => {
-    if (req.isAuthenticated()) {
-        try {
-            const { rows } = await pool.query(
-                "DELETE FROM quizzes WHERE quiz_id=$1",
-                [req.params.quiz_id]
-            );
-            console.log('currentUserQuery:', rows);
-            res.json(rows);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
-        }
-    } else {
-        res.json({});
+    try {
+        await pool.query("DELETE FROM quizzes WHERE quiz_id=$1", [req.params.quiz_id]);
+        res.status(200).json({ message: 'Quiz deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting quiz:', error);
+        res.status(500).json({ error: 'Error deleting quiz' });
     }
 });
 
@@ -141,87 +96,68 @@ router.post('/question', async (req, res) => {
             res.json(rows);
         } catch (error) {
             console.error('Error fetching user data:', error);
-            res.json({});
+            res.status(500).json({ error: 'Error fetching data from database' });
         }
     } else {
-        res.json({});
+        res.status(401).json({ error: 'User is not authenticated' });
     }
 });
 
 router.get('/question/:question_id', async (req, res) => {
-    if (req.isAuthenticated()) {
-        try {
-            const { rows } = await pool.query(
-                `SELECT questions.*, multiple_choice_questions.*
-                FROM questions
-                LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
-                WHERE questions.question_id=$1`,
-                [req.params.question_id]
-            );
-            console.log('currentUserQuery:', rows);
-            res.json(rows);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
-        }
-    } else {
-        res.json({});
-    }
+    const query = `SELECT questions.*, multiple_choice_questions.*
+                    FROM questions
+                    LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
+                    WHERE questions.question_id=$1`;
+    const params = [req.params.question_id];
+    handleRequest(req, res, query, params);
 });
 
 router.put('/update-question/:question_id', async (req, res) => {
     if (req.isAuthenticated()) {
-        console.log(req.body);
         try {
-            for (let el in req.body) {
-                console.log('el:', el);
-                console.log('req.body[el]:', req.body[el]);
-                if (el === 'question_text') {
-                    const { rows } = await pool.query(
-                        `UPDATE questions SET ${el}=$1 WHERE question_id=$2`,
-                        [req.body[el], req.params.question_id]
+            for (let field in req.body) {
+                if (field === 'question_text') {
+                    await pool.query(
+                        `UPDATE questions SET question_text=$1 WHERE question_id=$2`,
+                        [req.body[field], req.params.question_id]
                     );
-                    console.log('currentUserQuery:', rows);
                 }
-                else if (req.body.q_type === 'multiple_choice' && el !== 'q_type') {
-                    const { rows } = await pool.query(
-                        `UPDATE multiple_choice_questions SET ${el}=$1 WHERE question_id=$2`,
-                        [req.body[el], req.params.question_id]
+                else if (req.body.q_type === 'multiple_choice' && field !== 'q_type') {
+                    await pool.query(
+                        `UPDATE multiple_choice_questions SET ${field}=$1 WHERE question_id=$2`,
+                        [req.body[field], req.params.question_id]
                     );
-                    console.log('currentUserQuery:', rows);
                 }
             }   
-            res.json({});
+            res.status(200).json({ message: 'Question updated successfully' });
         } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
+            console.error('Error updating question:', error);
+            res.status(500).json({ error: 'Error updating question' });
         }
     } else {
-        res.json({});
+        res.status(401).json({ error: 'User is not authenticated' });
     }
 });
 
 router.delete('/question/:question_id', async (req, res) => {
     if (req.isAuthenticated()) {
         try {
-            const { rows } = await pool.query(
+            await pool.query(
                 "DELETE FROM multiple_choice_questions WHERE question_id=$1",
                 [req.params.question_id]
             );
-            const { rows2 } = await pool.query(
+            await pool.query(
                 "DELETE FROM questions WHERE question_id=$1",
                 [req.params.question_id]
             );
             
-            console.log('currentUserQuery:', rows);
-            console.log('currentUserQuery:', rows2);
-            res.json(rows);
+            res.status(200).json({ message: 'Question deleted successfully' });
         } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.json({});
+            console.error('Error deleting question:', error);
+            res.status(500).json({ error: 'Error deleting question' });
         }
     } else {
-        res.json({});
+        res.status(401).json({ error: 'User is not authenticated' });
     }
 });
 

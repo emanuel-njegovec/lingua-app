@@ -1,36 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const pool = require('../db');
+const { pool } = require('../db');
+require('dotenv').config();
 
+const frontendURL = process.env.FRONTEND_URL;
 
 router.get('/google', passport.authenticate("google", {
     scope: 'profile'
 }));
 
 router.get('/google/callback', passport.authenticate(
-    'google', { session: true }),
-    (req, res) => {
-        res.redirect('http://localhost:8080/home/');
-    }
+  'google', { session: true }),
+  function handleGoogleCallback(req, res) {
+      res.redirect(frontendURL + '/home/');
+  }
 );
 
-router.get('/logout', function(req, res, next) {
+router.get('/logout', function handleLogout(req, res, next) {
   req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('http://localhost:8080');
+      if (err) { return next(err); }
+      res.redirect(frontendURL);
   });
 });
 
-router.get('/check-auth', (req, res) => {
-    if (req.isAuthenticated()) {
-      // User is authenticated, respond with authenticated status
-      res.json({ authenticated: true });
-    } else {
-      // User is not authenticated, respond with unauthenticated status
-      res.json({ authenticated: false });
-    }}
-);
+router.get('/check-auth', function checkAuth(req, res) {
+  if (req.isAuthenticated()) {
+      res.status(200).json({ authenticated: true });
+  } else {
+      res.status(401).json({ authenticated: false });
+  }
+});
 
 router.get('/profile', async (req, res) => {
     if (req.isAuthenticated()) {
@@ -40,14 +40,14 @@ router.get('/profile', async (req, res) => {
           [req.user.id]
         );
         console.log('currentUserQuery:', rows);
-        res.json(rows);
+        res.status(200).json(rows);
       } catch (error) {
         console.error('Error fetching user data:', error);
-        res.json({});
+        res.status(500).json({ error: 'Error fetching data from database' });
       }
     } else {
       // User is not authenticated, respond with an empty object
-      res.json({});
+      res.status(401).json({ error: 'User is not authenticated' });
     }
 });
 

@@ -9,5 +9,14 @@ const pool = new Pool({
   database: process.env.DB_NAME
 });
 
+const fetchDataFromDB = async (query, params) => {
+  try {
+      const { rows } = await pool.query(query, params);
+      return rows;
+  } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw new Error('Error fetching data from database');
+  }
+}
 
-module.exports = pool;
+module.exports = { pool, fetchDataFromDB };
