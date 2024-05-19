@@ -15,6 +15,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 import MultipleChoiceQInput from '@/components/MultipleChoiceQInput.vue';
+import { API_URL } from '@/config';
 
 const route = useRoute();
 const param = route.params.question_id;
@@ -27,7 +28,7 @@ const type = ref('');
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`http://localhost:3000/api/question/${param}`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/api/question/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         question.value = response.data;
         type.value = question.value[0].q_type;

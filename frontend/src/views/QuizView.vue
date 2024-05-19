@@ -16,6 +16,7 @@
             <Button label="Upisivanje odgovora" @click="newQuestion('write_in')"></Button>
             <Button label="Nadopunjavanje" @click="newQuestion('fill_in')"></Button>
         </Dialog>
+        <Button icon="pi pi-save" @click="saveQuiz"></Button>
     </div>
 </template>
 
@@ -29,6 +30,7 @@ import Button from 'primevue/button';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+import { API_URL } from '@/config';
 
 const router = useRouter();
 const route = useRoute();
@@ -45,7 +47,7 @@ const quizData = ref({
 const newQuestion = async (q_type) => {
     try {
         // eslint-disable-next-line
-        const response = await axios.post('http://localhost:3000/api/question', { param, q_type }, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/api/question`, { param, q_type }, { withCredentials: true });
         console.log('question_id', response.data);
         const question_id = response.data[0].question_id;
         
@@ -53,6 +55,10 @@ const newQuestion = async (q_type) => {
     } catch (error) {
         console.error(error);
     }
+}
+
+const saveQuiz = async () => {
+    router.push('/home');
 }
 
 const removeItem = (questionToRemove) => {
@@ -66,7 +72,7 @@ const removeItem = (questionToRemove) => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`http://localhost:3000/api/quiz/${param}`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/api/quiz/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         quiz.value = response.data;
         console.log(quiz.value);
@@ -87,7 +93,7 @@ const handleInputChange = () => {
     saveTimeout = setTimeout(async () => {
         try {
             console.log(quizData.value);
-            await axios.put(`http://localhost:3000/api/update-quiz/${param}`, quizData.value, { withCredentials: true });
+            await axios.put(`${API_URL}/api/update-quiz/${param}`, quizData.value, { withCredentials: true });
         } catch (error) {
             console.error(error);
         }

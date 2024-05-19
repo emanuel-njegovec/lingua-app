@@ -8,7 +8,7 @@
 import Button from 'primevue/button';
 
 const googleLogin = () => {
-      window.open('http://localhost:3000/auth/google', '_self');
+    window.open('http://localhost:3000/auth/google', '_self');
 }
 
 </script>

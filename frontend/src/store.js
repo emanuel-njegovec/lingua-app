@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+
+// to store in pinia store: logged in user data, all of the users quizzes (both created and played) but without the images, and the current quiz being played (with images)
+
 export const useUserStore = defineStore('user', {
     state: () => ({
         authenticated: false,

@@ -44,10 +44,10 @@ const newQuiz = async () => {
 
 const removeItem = (quizToRemove) => {
     console.log('remove', quizToRemove);
-  const index = quizzes.value.findIndex(quiz => quiz.quiz_id === quizToRemove);
-  if (index !== -1) {
-    quizzes.value.splice(index, 1);
-  }
+    const index = quizzes.value.findIndex(quiz => quiz.quiz_id === quizToRemove);
+    if (index !== -1) {
+        quizzes.value.splice(index, 1);
+    }
 };
 
 onMounted(async () => {
