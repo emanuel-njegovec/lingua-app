@@ -36,7 +36,7 @@ router.get('/profile', async (req, res) => {
     if (req.isAuthenticated()) {
       try {
         const { rows } = await pool.query(
-          "SELECT users.username FROM users WHERE users.id=$1",
+          "SELECT username, user_role FROM users WHERE id=$1",
           [req.user.id]
         );
         console.log('currentUserQuery:', rows);

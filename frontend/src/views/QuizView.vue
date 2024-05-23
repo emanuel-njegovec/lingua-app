@@ -6,8 +6,10 @@
                 <InputText v-model="quizData.quiz_name" placeholder="Enter the name of the quiz" @input="handleInputChange" />
                 <Textarea v-model="quizData.description" placeholder="Enter the description of the quiz" @input="handleInputChange" />
             </div>
-            <ul v-if="quiz[0] && quiz[0].question_id">
-                <QuestionListItem v-for="question in quiz" :key="question.question_id" :question="question" @remove_question="removeItem"></QuestionListItem>
+            <ul v-if="quizData">
+                <QuestionListItem v-for="question in multipleChoice" :key="'multipleChoice-' + question.question_id" :question="question" @remove_question="removeItem('multipleChoice', question)"></QuestionListItem>
+                <QuestionListItem v-for="question in writeIn" :key="'writeIn-' + question.question_id" :question="question" @remove_question="removeItem('writeIn', question)"></QuestionListItem>
+                <QuestionListItem v-for="question in fillIn" :key="'fillIn-' + question.question_id" :question="question" @remove_question="removeItem('fillIn', question)"></QuestionListItem>
             </ul>
         </div>
         <Button icon="pi pi-plus" @click="visible = true"></Button>
@@ -43,6 +45,9 @@ const quizData = ref({
     quiz_name: '',
     description: ''
 });
+const multipleChoice = ref({});
+const writeIn = ref({});
+const fillIn = ref({});
 
 const newQuestion = async (q_type) => {
     try {
@@ -51,21 +56,28 @@ const newQuestion = async (q_type) => {
         console.log('question_id', response.data);
         const question_id = response.data[0].question_id;
         
-        router.push(`/quiz/${param}/question/${question_id}`);
+        router.push(`/manage-quizzes/${param}/question/${question_id}`);
     } catch (error) {
         console.error(error);
     }
 }
 
 const saveQuiz = async () => {
-    router.push('/home');
+    router.go(-1)
 }
 
-const removeItem = (questionToRemove) => {
-    console.log('remove', questionToRemove);
-    const index = quiz.value.findIndex(question => question.question_id === questionToRemove);
+const removeItem = (type, item) => {
+    const index = type === 'multipleChoice' ? multipleChoice.value.indexOf(item) :
+                type === 'writeIn' ? writeIn.value.indexOf(item) :
+                fillIn.value.indexOf(item);
     if (index !== -1) {
-        quiz.value.splice(index, 1);
+        if (type === 'multipleChoice') {
+            multipleChoice.value.splice(index, 1);
+        } else if (type === 'writeIn') {
+            writeIn.value.splice(index, 1);
+        } else {
+            fillIn.value.splice(index, 1);
+        }
     }
 };
 
@@ -75,9 +87,16 @@ onMounted(async () => {
         const response = await axios.get(`${API_URL}/api/quiz/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         quiz.value = response.data;
-        console.log(quiz.value);
-        quizData.value.quiz_name = quiz.value[0].quiz_name;
-        quizData.value.description = quiz.value[0].description;
+        //console.log(quiz.value);
+        multipleChoice.value = quiz.value.multiple_choice;
+        writeIn.value = quiz.value.write_in;
+        fillIn.value = quiz.value.fill_in;
+        quizData.value.quiz_name = quiz.value.quiz_name;
+        quizData.value.description = quiz.value.quiz_description;
+        console.log(quizData.value);
+        console.log(multipleChoice.value)
+        console.log(writeIn.value);
+        console.log(fillIn.value);
     } catch (error) {
         console.error(error);
     }
@@ -122,6 +141,9 @@ const handleInputChange = () => {
 
 ul {
     all: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 </style>

@@ -26,17 +26,19 @@ passport.use(
               [account.name, account.sub]
             );
   
-            const id = await pool.query("SELECT id FROM users WHERE google_id=$1", [
+            const data = await pool.query("SELECT id, user_role FROM users WHERE google_id=$1", [
               account.sub,
             ]);
             user = {
-              id: id.rows[0].id,
-              username: account.name
+              id: data.rows[0].id,
+              username: account.name,
+              user_role: data.rows[0].user_role
             };
           } else {
             user = {
               id: currentUserQuery.rows[0].id,
-              username: currentUserQuery.rows[0].username
+              username: currentUserQuery.rows[0].username,
+              user_role: currentUserQuery.rows[0].user_role
             };
           }
           done(null, user);

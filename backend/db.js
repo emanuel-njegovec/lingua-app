@@ -11,8 +11,13 @@ const pool = new Pool({
 
 const fetchDataFromDB = async (query, params) => {
   try {
-      const { rows } = await pool.query(query, params);
-      return rows;
+      if (params) {
+        const { rows } = await pool.query(query, params);
+        return rows;
+      } else {
+        const { rows } = await pool.query(query);
+        return rows;
+      }
   } catch (error) {
       console.error('Error fetching user data:', error);
       throw new Error('Error fetching data from database');

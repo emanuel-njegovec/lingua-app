@@ -19,25 +19,56 @@ const handleRequest = async (req, res, query, params) => {
 }
 
 router.get('/user-quizzes', async (req, res) => {
-    const query = "SELECT * FROM quizzes WHERE quizzes.user_id=$1";
+    const query = "SELECT * FROM quizzes";
     const params = [req.user.id];
     handleRequest(req, res, query, params);
 });
 
 router.get('/all-quizzes', async (req, res) => {
-    const query = "SELECT * FROM quizzes WHERE quizzes.user_id!=$1";
-    const params = [req.user.id];
+    const query = "SELECT * FROM quizzes";
+    const params = null;
     handleRequest(req, res, query, params);
 });
 
 router.get('/quiz/:quiz_id', async (req, res) => {
-    const query = `SELECT qz.*, questions.*, multiple_choice_questions.* 
-                    FROM quizzes qz
-                    LEFT JOIN questions ON qz.quiz_id = questions.quiz_id 
-                    LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
-                    WHERE qz.quiz_id=$1`;
+    const query = "SELECT * FROM quizzes WHERE quiz_id=$1";
+    const query_multiple_choice = `SELECT questions.*, multiple_choice_questions.*
+                    FROM questions 
+                    JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
+                    AND questions.q_type='multiple_choice'
+                    WHERE questions.quiz_id=$1`;
+    const query_write_in = `SELECT questions.*, write_in_questions.*
+                    FROM questions
+                    JOIN write_in_questions ON questions.question_id = write_in_questions.question_id
+                    AND questions.q_type='write_in'
+                    WHERE questions.quiz_id=$1`;
+    const query_fill_in =`SELECT questions.*, fill_in_questions.*
+                    FROM questions
+                    JOIN fill_in_questions ON questions.question_id = fill_in_questions.question_id
+                    AND questions.q_type='fill_in'
+                    WHERE questions.quiz_id=$1`;
     const params = [req.params.quiz_id];
-    handleRequest(req, res, query, params);
+    if (req.isAuthenticated()) {
+        try {
+            const data_quiz = await fetchDataFromDB(query, params);
+            const data_multiple_choice = await fetchDataFromDB(query_multiple_choice, params);
+            const data_write_in = await fetchDataFromDB(query_write_in, params);
+            const data_fill_in = await fetchDataFromDB(query_fill_in, params);
+            const data = {
+                quiz_name: data_quiz[0].quiz_name,
+                quiz_description: data_quiz[0].description,
+                multiple_choice: data_multiple_choice,
+                write_in: data_write_in,
+                fill_in: data_fill_in
+            };
+            res.json(data);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            res.status(500).json({ error: error.message });
+        }
+    } else {
+        res.status(401).json({ error: 'User is not authenticated' });
+    }
 });
 
 router.post('/quiz', async (req, res) => {
@@ -53,11 +84,10 @@ router.put('/update-quiz/:quiz_id', async (req, res) => {
             for (let el in req.body) {
                 console.log('el:', el);
                 console.log('req.body[el]:', req.body[el]);
-                const { rows } = await pool.query(
+                await pool.query(
                     `UPDATE quizzes SET ${el}=$1 WHERE quiz_id=$2`,
                     [req.body[el], req.params.quiz_id]
                 );
-                console.log('currentUserQuery:', rows);
             }   
             res.status(200).json({ message: 'Quiz updated successfully' });
         } catch (error) {
@@ -88,11 +118,20 @@ router.post('/question', async (req, res) => {
                 [req.body.param, req.body.q_type]
             );
             if (req.body.q_type === 'multiple_choice') {
-                const { rows2 } = await pool.query(
+                await pool.query(
                     "INSERT INTO multiple_choice_questions (question_id) VALUES ($1)",
                     [rows[0].question_id]
                 );
-                console.log('currenrrererer:', rows2);
+            } else if (req.body.q_type === 'write_in') {
+                await pool.query(
+                    "INSERT INTO write_in_questions (question_id) VALUES ($1)",
+                    [rows[0].question_id]
+                )
+            } else if (req.body.q_type === 'fill_in') {
+                await pool.query(
+                    "INSERT INTO fill_in_questions (question_id) VALUES ($1)",
+                    [rows[0].question_id]
+                )
             }
             console.log('currentUserQuery:', rows);
             res.json(rows);
@@ -106,12 +145,29 @@ router.post('/question', async (req, res) => {
 });
 
 router.get('/question/:question_id', async (req, res) => {
-    const query = `SELECT questions.*, multiple_choice_questions.*
-                    FROM questions
-                    LEFT JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
-                    WHERE questions.question_id=$1`;
     const params = [req.params.question_id];
-    handleRequest(req, res, query, params);
+    const query1 = `SELECT questions.q_type FROM questions WHERE questions.question_id=$1`;
+    const { rows } = await pool.query(query1, params);
+    const type = rows[0].q_type;
+    if (type === 'multiple_choice') {
+        const query = `SELECT questions.*, multiple_choice_questions.*
+                        FROM questions
+                        JOIN multiple_choice_questions ON questions.question_id = multiple_choice_questions.question_id
+                        WHERE questions.question_id=$1`;
+        handleRequest(req, res, query, params);
+    } else if (type === 'write_in') {
+        const query = `SELECT questions.*, write_in_questions.*
+                        FROM questions
+                        JOIN write_in_questions ON questions.question_id = write_in_questions.question_id
+                        WHERE questions.question_id=$1`;
+        handleRequest(req, res, query, params);
+    } else if (type === 'fill_in') {
+        const query = `SELECT questions.*, fill_in_questions.*
+                        FROM questions
+                        JOIN fill_in_questions ON questions.question_id = fill_in_questions.question_id
+                        WHERE questions.question_id=$1`;
+        handleRequest(req, res, query, params);
+    }
 });
 
 router.put('/update-question/:question_id', async (req, res) => {
@@ -130,6 +186,18 @@ router.put('/update-question/:question_id', async (req, res) => {
                         [req.body[field], req.params.question_id]
                     );
                 }
+                else if (req.body.q_type === 'write_in' && field !== 'q_type') {
+                    await pool.query(
+                        `UPDATE write_in_questions SET ${field}=$1 WHERE question_id=$2`,
+                        [req.body[field], req.params.question_id]
+                    );
+                }
+                else if (req.body.q_type === 'fill_in' && field !== 'q_type') {
+                    await pool.query(
+                        `UPDATE fill_in_questions SET ${field}=$1 WHERE question_id=$2`,
+                        [req.body[field], req.params.question_id]
+                    );
+                }
             }   
             res.status(200).json({ message: 'Question updated successfully' });
         } catch (error) {
@@ -144,10 +212,10 @@ router.put('/update-question/:question_id', async (req, res) => {
 router.delete('/question/:question_id', async (req, res) => {
     if (req.isAuthenticated()) {
         try {
-            await pool.query(
+            /* await pool.query(
                 "DELETE FROM multiple_choice_questions WHERE question_id=$1",
                 [req.params.question_id]
-            );
+            ); */
             await pool.query(
                 "DELETE FROM questions WHERE question_id=$1",
                 [req.params.question_id]

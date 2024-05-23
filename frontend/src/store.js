@@ -7,6 +7,7 @@ import axios from 'axios';
 export const useUserStore = defineStore('user', {
     state: () => ({
         authenticated: false,
+        user_role: null,
         username: null,
         userID: null
     }),

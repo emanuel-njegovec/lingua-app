@@ -7,6 +7,8 @@ import HomeView from './views/HomeView.vue';
 import LoginView from './views/LoginView.vue';
 import QuizView from './views/QuizView.vue';
 import QuestionView from './views/QuestionView.vue';
+import PlayQuizView from './views/PlayQuizView.vue';
+import QuizMgmtView from './views/QuizMgmtView.vue';
 
 const routes = [
     {
@@ -20,9 +22,10 @@ const routes = [
         try {
           const userStore = useUserStore();
           const { data: [userData] } = await axios.get(API_URL + '/auth/profile', { withCredentials: true });
-          const { username, user_id: userID } = userData;
+          const { username, user_id: userID, user_role } = userData;
           userStore.username = username;
           userStore.userID = userID;
+          userStore.user_role = user_role;
           next();
         } catch (error) {
           console.error('Error fetching user profile:', error);
@@ -31,16 +34,28 @@ const routes = [
       meta: { requiresAuth: true }
     },
     {
-      path: '/quiz/:quiz_id',
-      component: QuizView,
-      name: 'quiz',
-      meta: { requiresAuth: true },
+      path: '/manage-quizzes',
+      component: QuizMgmtView,
+      name: 'manage-quizzes',
+      meta: { requiresAuth: true, requiresRole: 'admin' }
     },
     {
-      path: '/quiz/:quiz_id/question/:question_id',
+      path: '/manage-quizzes/:quiz_id',
+      component: QuizView,
+      name: 'quiz',
+      meta: { requiresAuth: true, requiresRole: 'admin'},
+    },
+    {
+      path: '/manage-quizzes/:quiz_id/question/:question_id',
       component: QuestionView,
       name: 'question',
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresRole: 'admin'},
+    },
+    {
+      path: '/play/:quiz_id',
+      component: PlayQuizView,
+      name: 'play-quiz',
+      meta: { requiresAuth: true }
     }
 ];
 
@@ -56,9 +71,17 @@ router.beforeEach((to, from, next) => {
         axios.get(API_URL + '/auth/check-auth', { withCredentials: true })
           .then(response => {
             if (response.data.authenticated) {
-              // User is authenticated, proceed to the route
               userStore.authenticated = true;
-              next();
+              if (to.matched.some(record => record.meta.requiresRole)) {
+                if (userStore.user_role === to.meta.requiresRole) {
+                  next();
+                } else {
+                  next('/home');
+                }
+              } else {
+                next();
+              }
+              //next();
             } else {
               // User is not authenticated, redirect to login page
               next('/');

@@ -4,9 +4,10 @@
         <div class="container">
             <h1>Question</h1>
             <MultipleChoiceQInput v-if="question && type === 'multiple_choice'" :question="question"/>
+            <WriteInQInput v-if="question && type === 'write_in'" :question="question"/>
+            <FillInQInput v-if="question && type === 'fill_in'" :question="question"/>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -15,6 +16,8 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 import MultipleChoiceQInput from '@/components/MultipleChoiceQInput.vue';
+import WriteInQInput from '@/components/WriteInQInput.vue';
+import FillInQInput from '@/components/FillInQInput.vue';
 import { API_URL } from '@/config';
 
 const route = useRoute();

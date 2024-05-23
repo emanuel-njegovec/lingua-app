@@ -1,11 +1,19 @@
 <template>
     <div class="container">
-        <Dropdown optionLabel="name" placeholder="Select a language" />
+        <Dropdown v-model="selectedLanguage" :options="languages" optionLabel="name" placeholder="Select a language" />
     </div>
 </template>
 
 <script setup>
 import Dropdown from 'primevue/dropdown';
+import { ref } from 'vue';
+
+const selectedLanguage = ref({ name: 'English', code: 'en' });
+const languages = ref([
+    { name: 'English', code: 'en' },
+    { name: 'Korean', code: 'kr' },
+]);
+
 
 </script>
 

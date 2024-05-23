@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <Button label="Manage quizzes" @click="manageQuizzes" v-if="userRole === 'admin'"/>
         <ul>
             <QuizListItem v-for="quiz in quizzes" :key="quiz.id" :quiz="quiz"></QuizListItem>
         </ul>
@@ -7,11 +8,23 @@
 </template>
 
 <script setup>
+import Button from 'primevue/button';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import QuizListItem from '../components/QuizListItem.vue';
+import { useUserStore } from '../store';
+import { useRouter } from 'vue-router';
 
 const quizzes = ref([]);
+
+const userStore = useUserStore();
+const userRole = userStore.user_role;
+
+const router = useRouter();
+
+const manageQuizzes = () => {
+    router.push('/manage-quizzes');
+};
 
 onMounted(async () => {
     try {
@@ -24,3 +37,10 @@ onMounted(async () => {
 });
 
 </script>
+
+<style scoped>
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+</style>

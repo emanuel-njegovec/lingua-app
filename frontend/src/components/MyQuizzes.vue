@@ -81,5 +81,10 @@ onMounted(async () => {
     height: 60px;
     width: 60px;
 }
-
+ul {
+    all: unset;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
 </style>
