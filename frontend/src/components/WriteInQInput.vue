@@ -11,18 +11,6 @@
             <InputText id="correct-ans" v-model="questionData.correct_ans" @input="handleInputChange" />
             <label for="correct-ans">Točan odgovor</label>
         </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans1" v-model="questionData.incorrect_ans_1" @input="handleInputChange" />
-            <label for="incorrect-ans1">Netočan odgovor 1</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans2" v-model="questionData.incorrect_ans_2" @input="handleInputChange" />
-            <label for="incorrect-ans2">Netočan odgovor 2</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans3" v-model="questionData.incorrect_ans_3" @input="handleInputChange" />
-            <label for="incorrect-ans3">Netočan odgovor 3</label>
-        </FloatLabel>
         <Button icon="pi pi-save" @click="saveQuestion"></Button>
     </div>
 </template>
@@ -53,9 +41,6 @@ const uploadUrl = `${API_URL}/api/upload-image/${router.currentRoute.value.param
 const questionData = ref({
     question_text: '',
     correct_ans: '',
-    incorrect_ans_1: '',
-    incorrect_ans_2: '',
-    incorrect_ans_3: '',
     q_type: ''
 });
 
@@ -68,11 +53,9 @@ const saveQuestion = async () => {
 onMounted(() => {
     questionData.value.question_text = props.question[0].question_text;
     questionData.value.correct_ans = props.question[0].correct_ans;
-    questionData.value.incorrect_ans_1 = props.question[0].incorrect_ans_1;
-    questionData.value.incorrect_ans_2 = props.question[0].incorrect_ans_2;
-    questionData.value.incorrect_ans_3 = props.question[0].incorrect_ans_3;
     questionData.value.q_type = props.question[0].q_type;
     imageUrl.value = props.question[0].image_url;
+    console.log(props);
 })
 
 const uploadHandler = async ({ files }) => {

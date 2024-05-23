@@ -4,24 +4,23 @@
         </FileUpload>
         <Image v-if="imageUrl" :src="imageUrl" width="400"/>
         <FloatLabel>
-            <InputText id="qtext" v-model="questionData.question_text" @input="handleInputChange" />
+            <Chips id="qtext" v-model="input" separator=" ">
+                <template #chip="slotProps">
+                    <div @click="setCorrectAnswer">
+                        <span>{{ slotProps.value }}</span>
+                    </div>
+                </template>
+            </Chips>
             <label for="qtext">Pitanje</label>
         </FloatLabel>
+        
         <FloatLabel>
             <InputText id="correct-ans" v-model="questionData.correct_ans" @input="handleInputChange" />
             <label for="correct-ans">Točan odgovor</label>
         </FloatLabel>
         <FloatLabel>
-            <InputText id="incorrect-ans1" v-model="questionData.incorrect_ans_1" @input="handleInputChange" />
-            <label for="incorrect-ans1">Netočan odgovor 1</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans2" v-model="questionData.incorrect_ans_2" @input="handleInputChange" />
-            <label for="incorrect-ans2">Netočan odgovor 2</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans3" v-model="questionData.incorrect_ans_3" @input="handleInputChange" />
-            <label for="incorrect-ans3">Netočan odgovor 3</label>
+            <InputText id="hint" v-model="questionData.ans_hint" @input="handleInputChange" />
+            <label for="hint">Pomoć</label>
         </FloatLabel>
         <Button icon="pi pi-save" @click="saveQuestion"></Button>
     </div>
@@ -33,7 +32,8 @@ import FloatLabel from 'primevue/floatlabel';
 import FileUpload from 'primevue/fileupload';
 import Image from 'primevue/image';
 import Button from 'primevue/button';
-import { ref, defineProps, onMounted } from 'vue';
+import Chips from 'primevue/chips';
+import { ref, defineProps, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 import { API_URL } from '@/config';
@@ -46,6 +46,8 @@ const props = defineProps({
     question: Object
 });
 
+const input = ref([]);
+
 const router = useRouter();
 
 const uploadUrl = `${API_URL}/api/upload-image/${router.currentRoute.value.params.question_id}`;
@@ -53,27 +55,40 @@ const uploadUrl = `${API_URL}/api/upload-image/${router.currentRoute.value.param
 const questionData = ref({
     question_text: '',
     correct_ans: '',
-    incorrect_ans_1: '',
-    incorrect_ans_2: '',
-    incorrect_ans_3: '',
+    ans_hint: '',
     q_type: ''
 });
 
 const imageUrl = ref('');
 
+watch(input, (newVal) => {
+    console.log('Chip changed', newVal);
+    questionData.value.question_text = newVal.join(' ');
+    if (!newVal.includes(questionData.value.correct_ans)) {
+        questionData.value.correct_ans = '';
+    }
+    handleInputChange();
+});
+
+const setCorrectAnswer = (event) => {
+    questionData.value.correct_ans = event.target.innerText;
+    handleInputChange();
+};
+
 const saveQuestion = async () => {
+    await axios.put(`http://localhost:3000/api/update-question/${param}`, questionData.value, { withCredentials: true });
     router.go(-1);
-}
+};
 
 onMounted(() => {
     questionData.value.question_text = props.question[0].question_text;
     questionData.value.correct_ans = props.question[0].correct_ans;
-    questionData.value.incorrect_ans_1 = props.question[0].incorrect_ans_1;
-    questionData.value.incorrect_ans_2 = props.question[0].incorrect_ans_2;
-    questionData.value.incorrect_ans_3 = props.question[0].incorrect_ans_3;
+    questionData.value.ans_hint = props.question[0].ans_hint;
     questionData.value.q_type = props.question[0].q_type;
     imageUrl.value = props.question[0].image_url;
-})
+    input.value = props.question[0].question_text.split(' ');
+    console.log(props);
+});
 
 const uploadHandler = async ({ files }) => {
     const formData = new FormData();
@@ -92,11 +107,11 @@ const uploadHandler = async ({ files }) => {
         console.error(error);
     
     }
-}
+};
 
 const onUpload = (event) => {
     console.log('File uploaded successfully', event);
-}
+};
 
 let saveTimeout;
 
@@ -113,7 +128,8 @@ const handleInputChange = () => {
             console.error(error);
         }
     }, 1000);
-}
+};
+
 
 </script>
 
