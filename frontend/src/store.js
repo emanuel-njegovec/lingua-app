@@ -46,3 +46,15 @@ export const useUserStore = defineStore('user', {
         },
     },
 });
+
+export const useLanguageStore = defineStore('language', {
+    state: () => ({
+        language: 'en'
+    }),
+    persist: true,
+    actions: {
+        setLanguage(language) {
+            this.language = language;
+        }
+    }
+});

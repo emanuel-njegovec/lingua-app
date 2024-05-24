@@ -5,11 +5,12 @@
                 <Image :src="question.image_url" width="400"></Image>
                 <h2>
                     <span v-for="(word, index) in text_split" :key="index">
-                        <InputText v-if="word === answer" />
+                        <InputText v-if="word === correct_answer" v-model="answer"/>
                         <span v-else>{{ word }}</span>
                         <span v-if="index < text_split.length - 1">&nbsp;</span>
                     </span>
                 </h2>
+                <Button @click="checkAnswer">Check</Button>
             </template>    
         </Card>
     </div>
@@ -18,6 +19,7 @@
 <script setup>
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 import { ref, defineProps } from 'vue';
 import Image from 'primevue/image';
 
@@ -27,7 +29,17 @@ const props = defineProps({
 });
 
 const text_split = props.question.question_text.split(' ');
-const answer = ref(props.question.correct_ans);
+const correct_answer = ref(props.question.correct_ans);
+const answer = ref('');
+
+const checkAnswer = () => {
+    if (answer.value === correct_answer.value) {
+        console.log('Correct');
+    } else {
+        console.log('Incorrect');
+    }
+};
+
 
 </script>
 

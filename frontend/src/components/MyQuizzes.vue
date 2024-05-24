@@ -7,7 +7,6 @@
                         <QuizListItem v-for="quiz in quizzes" :key="quiz.quiz_id" :quiz="quiz" @remove="removeItem"></QuizListItem>
                     </ul>
                 </div>
-                <Button icon="pi pi-plus" @click="newQuiz"></Button>
             </AccordionTab>
             <AccordionTab header="Dodani kvizovi">
                 <QuizListItem></QuizListItem>
@@ -21,26 +20,15 @@
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import QuizListItem from '../components/QuizListItem.vue';
-import Button from 'primevue/button';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useLanguageStore } from '@/store';
 import { API_URL } from '@/config';
 
 const quizzes = ref([]);
 const isLoading = ref(true);
 
-const router = useRouter();
-
-const newQuiz = async () => {
-    try {
-        const response = await axios.post(`${API_URL}/quiz`, null, { withCredentials: true });
-        const quiz_id = response.data[0].quiz_id;
-        router.push('/quiz/' + quiz_id);
-    } catch (error) {
-        console.error(error);
-    }
-}
+const languageStore = useLanguageStore();
 
 const removeItem = (quizToRemove) => {
     console.log('remove', quizToRemove);
@@ -52,7 +40,7 @@ const removeItem = (quizToRemove) => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/quiz/all`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/quiz/all/${languageStore.language}`, { withCredentials: true });
         //console.log('there', response.data);
         quizzes.value = response.data;
         console.log('there', quizzes.value);

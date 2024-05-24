@@ -14,8 +14,11 @@ import Button from 'primevue/button';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useLanguageStore } from '@/store';
 
 import { API_URL } from '@/config';
+
+const languageStore = useLanguageStore();
 
 const quizzes = ref([]);
 
@@ -27,7 +30,7 @@ const goHome = () => {
 
 const newQuiz = async () => {
     try {
-        const response = await axios.post(`${API_URL}/quiz`, null, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/quiz`, { lang: languageStore.language }, { withCredentials: true });
         const quiz_id = response.data[0].quiz_id;
         router.push('/manage-quizzes/' + quiz_id);
     } catch (error) {
@@ -44,7 +47,7 @@ const removeItem = (quizToRemove) => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/quiz/all`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/quiz/all/${languageStore.language}`, { withCredentials: true });
         quizzes.value = response.data;
         //console.log('there', response.data);
     } catch (error) {

@@ -18,6 +18,7 @@ const routes = [
     {
       path: '/home',
       component: HomeView,
+      name: 'home',
       beforeEnter: async (to, from, next) => {
         try {
           const userStore = useUserStore();

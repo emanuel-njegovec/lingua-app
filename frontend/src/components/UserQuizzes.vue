@@ -13,6 +13,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import QuizListItem from '../components/QuizListItem.vue';
 import { useUserStore } from '../store';
+import { useLanguageStore } from '../store';
 import { useRouter } from 'vue-router';
 import { API_URL } from '@/config';
 
@@ -27,9 +28,11 @@ const manageQuizzes = () => {
     router.push('/manage-quizzes');
 };
 
+const languageStore = useLanguageStore();
+
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/quiz/all`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/quiz/all/${languageStore.language}`, { withCredentials: true });
         quizzes.value = response.data;
         //console.log('there', response.data);
     } catch (error) {

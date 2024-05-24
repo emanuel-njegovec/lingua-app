@@ -4,7 +4,8 @@
             <template #content>
                 <Image :src="question.image_url" width="400"></Image>
                 <h2>{{ question.question_text }}</h2>
-                <InputText></InputText>
+                <InputText id="ans-text" v-model="answer"></InputText>
+                <Button @click="checkAnswer">Check</Button>
             </template>    
         </Card>
     </div>
@@ -13,13 +14,24 @@
 <script setup>
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
-import { defineProps } from 'vue';
+import Button from 'primevue/button';
+import { ref, defineProps } from 'vue';
 import Image from 'primevue/image';
 
 // eslint-disable-next-line
 const props = defineProps({
     question: Object
 });
+
+const answer = ref('');
+
+const checkAnswer = () => {
+    if (answer.value === props.question.correct_ans) {
+        console.log('Correct');
+    } else {
+        console.log('Incorrect');
+    }
+};
 
 </script>
 

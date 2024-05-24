@@ -16,10 +16,11 @@ const handleRequest = async (req, res, query, params) => {
     }
 }
 
-
-router.get('/all', async (req, res) => {
-    const query = "SELECT * FROM quizzes";
-    const params = null;
+router.get('/all/:lang', async (req, res) => {
+    console.log('req.params.lang:', req.params.lang);
+    const query = "SELECT * FROM quizzes WHERE lang=$1";
+    const params = [req.params.lang];
+    console.log('params:', params);
     handleRequest(req, res, query, params);
 });
 
@@ -65,8 +66,8 @@ router.get('/:quiz_id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const query = "INSERT INTO quizzes (user_id) VALUES ($1) RETURNING quiz_id";
-    const params = [req.user.id];
+    const query = "INSERT INTO quizzes (user_id, lang) VALUES ($1, $2) RETURNING quiz_id";
+    const params = [req.user.id, req.body.lang];
     handleRequest(req, res, query, params);
 });
 

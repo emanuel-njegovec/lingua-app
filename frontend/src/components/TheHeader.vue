@@ -1,18 +1,32 @@
 <template>
     <div class="container">
-        <Dropdown v-model="selectedLanguage" :options="languages" optionLabel="name" placeholder="Select a language" />
+        <Dropdown v-model="selectedLanguage" :options="languages" optionLabel="name" placeholder="Select a language" @update:modelValue="languageChanged"/>
     </div>
 </template>
 
 <script setup>
 import Dropdown from 'primevue/dropdown';
 import { ref } from 'vue';
+import { useLanguageStore } from '@/store';
 
-const selectedLanguage = ref({ name: 'English', code: 'en' });
+const languageStore = useLanguageStore();
+let currentLanguage = {};
+if (languageStore.language === 'en') {
+    currentLanguage = { name: 'English', code: 'en' };
+} else {
+    currentLanguage = { name: 'Korean', code: 'kr' };
+}
+
+const selectedLanguage = ref(currentLanguage);
 const languages = ref([
     { name: 'English', code: 'en' },
     { name: 'Korean', code: 'kr' },
 ]);
+
+const languageChanged = (e) => {
+    languageStore.setLanguage(e.code);
+    //console.log(languageStore.language);
+};
 
 
 </script>
