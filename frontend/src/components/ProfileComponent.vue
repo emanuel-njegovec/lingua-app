@@ -8,13 +8,14 @@
 import { useUserStore } from '@/store';
 import Button from 'primevue/button';
 //import axios from 'axios';
+import { API_URL } from '@/config';
 
 const user = useUserStore();
 
 const logout = () => {
     user.username = null;
     user.userID = null;
-    window.location.href = 'http://localhost:3000/auth/logout';
+    window.location.href = `${API_URL}/auth/logout`;
 }
 
 </script>

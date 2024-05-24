@@ -9,6 +9,8 @@ require('./auth.js');
 
 const authRouter = require('./routes/authRouter');
 const apiRouter = require('./routes/apiRouter');
+const quizRouter = require('./routes/quizRouter');
+const questionRouter = require('./routes/questionRouter');
 
 const PORT = 3000;
 
@@ -35,6 +37,8 @@ app.use(passport.session());
 
 app.use('/auth', authRouter);
 app.use('/api', apiRouter);
+app.use('/quiz', quizRouter);
+app.use('/question', questionRouter);
 
 app.listen(PORT, (error) =>{ 
 	if(!error) 

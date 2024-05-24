@@ -6,9 +6,10 @@
 
 <script setup>
 import Button from 'primevue/button';
+import { API_URL } from '@/config';
 
 const googleLogin = () => {
-    window.open('http://localhost:3000/auth/google', '_self');
+    window.open(`${API_URL}/auth/google`, '_self');
 }
 
 </script>

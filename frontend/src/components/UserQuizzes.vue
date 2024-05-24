@@ -14,6 +14,7 @@ import axios from 'axios';
 import QuizListItem from '../components/QuizListItem.vue';
 import { useUserStore } from '../store';
 import { useRouter } from 'vue-router';
+import { API_URL } from '@/config';
 
 const quizzes = ref([]);
 
@@ -28,7 +29,7 @@ const manageQuizzes = () => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get('http://localhost:3000/api/all-quizzes', { withCredentials: true });
+        const response = await axios.get(`${API_URL}/quiz/all`, { withCredentials: true });
         quizzes.value = response.data;
         //console.log('there', response.data);
     } catch (error) {

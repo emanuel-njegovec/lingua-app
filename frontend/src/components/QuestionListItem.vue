@@ -19,6 +19,7 @@ import Image from 'primevue/image';
 import { defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { API_URL } from '@/config';
 
 
 const router = useRouter();
@@ -36,7 +37,7 @@ const getQuestion = () => {
 
 const deleteQuestion = async () => {
     try {
-        await axios.delete(`http://localhost:3000/api/question/${props.question.question_id}`, { withCredentials: true });
+        await axios.delete(`${API_URL}/question/${props.question.question_id}`, { withCredentials: true });
         emit('remove_question');
     } catch (error) {
         console.error(error);

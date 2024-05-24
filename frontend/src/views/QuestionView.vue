@@ -31,7 +31,7 @@ const type = ref('');
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/api/question/${param}`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/question/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         question.value = response.data;
         type.value = question.value[0].q_type;

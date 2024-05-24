@@ -52,7 +52,7 @@ const fillIn = ref({});
 const newQuestion = async (q_type) => {
     try {
         // eslint-disable-next-line
-        const response = await axios.post(`${API_URL}/api/question`, { param, q_type }, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/question`, { param, q_type }, { withCredentials: true });
         console.log('question_id', response.data);
         const question_id = response.data[0].question_id;
         
@@ -84,7 +84,7 @@ const removeItem = (type, item) => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/api/quiz/${param}`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/quiz/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         quiz.value = response.data;
         //console.log(quiz.value);
@@ -112,7 +112,7 @@ const handleInputChange = () => {
     saveTimeout = setTimeout(async () => {
         try {
             console.log(quizData.value);
-            await axios.put(`${API_URL}/api/update-quiz/${param}`, quizData.value, { withCredentials: true });
+            await axios.put(`${API_URL}/quiz/${param}`, quizData.value, { withCredentials: true });
         } catch (error) {
             console.error(error);
         }

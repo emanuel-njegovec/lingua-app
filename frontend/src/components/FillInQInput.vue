@@ -62,7 +62,6 @@ const questionData = ref({
 const imageUrl = ref('');
 
 watch(input, (newVal) => {
-    console.log('Chip changed', newVal);
     questionData.value.question_text = newVal.join(' ');
     if (!newVal.includes(questionData.value.correct_ans)) {
         questionData.value.correct_ans = '';
@@ -76,7 +75,7 @@ const setCorrectAnswer = (event) => {
 };
 
 const saveQuestion = async () => {
-    await axios.put(`http://localhost:3000/api/update-question/${param}`, questionData.value, { withCredentials: true });
+    await axios.put(`${API_URL}/question/${param}`, questionData.value, { withCredentials: true });
     router.go(-1);
 };
 
@@ -86,7 +85,12 @@ onMounted(() => {
     questionData.value.ans_hint = props.question[0].ans_hint;
     questionData.value.q_type = props.question[0].q_type;
     imageUrl.value = props.question[0].image_url;
-    input.value = props.question[0].question_text.split(' ');
+    if (props.question[0].question_text) {
+        input.value = props.question[0].question_text.split(' ');
+    }
+    else {
+        input.value = [];
+    }
     console.log(props);
 });
 
@@ -123,7 +127,7 @@ const handleInputChange = () => {
     saveTimeout = setTimeout(async () => {
         try {
             console.log(questionData.value);
-            await axios.put(`http://localhost:3000/api/update-question/${param}`, questionData.value, { withCredentials: true });
+            await axios.put(`${API_URL}/question/${param}`, questionData.value, { withCredentials: true });
         } catch (error) {
             console.error(error);
         }

@@ -17,6 +17,7 @@ import Button from 'primevue/button';
 import { defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { API_URL } from '@/config';
 
 const router = useRouter();
 
@@ -31,7 +32,7 @@ const getQuiz = () => {
 
 const deleteQuiz = async () => {
     try {
-        await axios.delete(`http://localhost:3000/api/quiz/${props.quiz.quiz_id}`, { withCredentials: true });
+        await axios.delete(`${API_URL}/quiz/${props.quiz.quiz_id}`, { withCredentials: true });
         emit('remove', props.quiz.quiz_id);
     } catch (error) {
         console.error(error);

@@ -108,7 +108,7 @@ const handleInputChange = () => {
     saveTimeout = setTimeout(async () => {
         try {
             console.log(questionData.value);
-            await axios.put(`http://localhost:3000/api/update-question/${param}`, questionData.value, { withCredentials: true });
+            await axios.put(`${API_URL}/question/${param}`, questionData.value, { withCredentials: true });
         } catch (error) {
             console.error(error);
         }
