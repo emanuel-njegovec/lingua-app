@@ -6,7 +6,7 @@
 
 <script setup>
 import Dropdown from 'primevue/dropdown';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useLanguageStore } from '@/store';
 
 const languageStore = useLanguageStore();
@@ -27,6 +27,10 @@ const languageChanged = (e) => {
     languageStore.setLanguage(e.code);
     //console.log(languageStore.language);
 };
+
+watch(selectedLanguage, () => {
+    window.location.reload();
+});
 
 
 </script>

@@ -1,18 +1,25 @@
 <template>
     <div class="container">
-        <Button class="quit-button" aria-label="Quit" @click="quitQuiz" severity="danger">Quit</Button>
+        <div class="top-buttons">
+            <Button class="quit-button" aria-label="Quit" @click="quitQuiz" severity="danger">Quit</Button>
+            <div v-tooltip="{ value: 'Answer all the questions first' }">
+                <Button aria-label="Finish" :disabled="answeredQuestions < combinedData.length" @click="finishQuiz">Finish quiz</Button>
+            </div>
+        </div>
         <Carousel :value="combinedData" v-if="combinedData[0] && combinedData[0].question_id" :page="currentPage" >
             <template #item="question">
-                <MultipleChoicePlayCard v-if="question.data.q_type === 'multiple_choice'" class="question-card" :question="question.data">
+                <MultipleChoicePlayCard v-if="question.data.q_type === 'multiple_choice'" class="question-card" :question="question.data" @question-answered="answeredQuestions++">
                 </MultipleChoicePlayCard>
-                <WriteInPlayCard v-if="question.data.q_type === 'write_in'" class="question-card" :question="question.data">
+                <WriteInPlayCard v-if="question.data.q_type === 'write_in'" class="question-card" :question="question.data" @question-answered="answeredQuestions++">
                 </WriteInPlayCard>
-                <FillInPlayCard v-if="question.data.q_type === 'fill_in'" class="question-card" :question="question.data">
+                <FillInPlayCard v-if="question.data.q_type === 'fill_in'" class="question-card" :question="question.data" @question-answered="answeredQuestions++">
                 </FillInPlayCard>
             </template>
         </Carousel>
-        <Button aria-label="Prev" @click="currentPage--" v-if="currentPage > 0">Prev</Button>
-        <Button aria-label="Next" @click="currentPage++" v-if="currentPage < combinedData.length-1">Next</Button>
+        <div class="bottom-buttons">
+            <Button aria-label="Prev" @click="currentPage--" :disabled="currentPage == 0">Prev</Button>
+            <Button aria-label="Next" @click="currentPage++" :disabled="currentPage == combinedData.length-1">Next</Button>
+        </div>
     </div>
 </template>
 
@@ -31,6 +38,8 @@ const router = useRouter();
 const route = useRoute();
 const param = route.params.quiz_id;
 
+const answeredQuestions = ref(0);
+
 const quiz = ref({});
 const multipleChoice = ref({});
 const writeIn = ref({});
@@ -40,6 +49,10 @@ const combinedData = ref([]);
 
 const quitQuiz = () => {
     router.go(-1);
+}
+
+const finishQuiz = () => {
+    router.push(`/quiz/${param}/results`);
 }
 
 onMounted(async () => {
@@ -76,10 +89,17 @@ onMounted(async () => {
 ::v-deep .p-carousel-next {
     display: none;
 }
-.quit-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+.top-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 </style>

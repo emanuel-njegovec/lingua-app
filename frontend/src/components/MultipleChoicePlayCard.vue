@@ -2,9 +2,24 @@
     <div class="container">
         <Card v-if="question">
             <template #content>
-                <Image :src="question.image_url" width="400"></Image>
-                <h2>{{ question.question_text }}</h2>
-                <Button v-for="(answer, index) in shuffledAnswers" :key="index" @click="checkAnswer">{{ answer }}</Button>
+                <div class="card-content">
+                    <Image :src="question.image_url" width="400"></Image>
+                    <h2>{{ question.question_text }}</h2>
+                    <div class="buttons-container">
+                        <Button
+                            v-for="(answer, index) in shuffledAnswers"
+                            :key="index"
+                            @click="checkAnswer(index)"
+                            :disabled="selectedButton !== null && selectedButton !== index"
+                            :class="{ 'highlighted': selectedButton === index }"
+                        >
+                        {{ answer }}
+                        </Button>
+                    </div>
+                    <transition-group name="p-message" tag="div">
+                        <Message v-if="selectedButton" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
+                    </transition-group>
+                </div>
             </template>    
         </Card>
     </div>
@@ -13,13 +28,19 @@
 <script setup>
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import { defineProps, computed } from 'vue';
+import Message from 'primevue/message';
+import { ref, defineProps, computed, defineEmits } from 'vue';
 import Image from 'primevue/image';
 
 // eslint-disable-next-line
 const props = defineProps({
     question: Object
 });
+
+const emit = defineEmits(['question-answered']);
+
+const selectedButton = ref(null);
+const message = ref({});
 
 const shuffledAnswers = computed(() =>{
     if (props.question) {
@@ -32,13 +53,25 @@ const shuffledAnswers = computed(() =>{
     return [];
 });
 
-const checkAnswer = (event) => {
-    console.log(event.target.innerText);
-    if (event.target.innerText === props.question.correct_ans) {
+const checkAnswer = (index) => {
+    console.log(shuffledAnswers.value[index]);
+    if (shuffledAnswers.value[index] === props.question.correct_ans) {
         console.log('Correct');
+        message.value = {
+            severity: 'success',
+            summary: 'Correct',
+            detail: 'Correct answer'
+        };
     } else {
         console.log('Incorrect');
+        message.value = {
+            severity: 'error',
+            summary: 'Incorrect',
+            detail: 'Incorrect answer'
+        };
     }
+    emit('question-answered');
+    selectedButton.value = index;
 };
 
 function shuffleArray(array) {
@@ -58,9 +91,26 @@ function shuffleArray(array) {
     margin-left: 10px;
     margin-right: 10px;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .container {
     height: 50vh;
+}
+.buttons-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.highlighted {
+    background-color: #57ec95;
 }
 
 </style>
