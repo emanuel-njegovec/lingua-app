@@ -28,8 +28,12 @@ router.get('/all-played/:lang', async (req, res) => {
 });
 
 router.get('/all/:lang', async (req, res) => {
-    console.log('req.params.lang:', req.params.lang);
-    const query = "SELECT * FROM quizzes WHERE lang=$1";
+    //console.log('req.params.lang:', req.params.lang);
+    const query = `SELECT q.*, AVG(qr.rating) AS average_rating
+                    FROM quizzes q
+                    LEFT JOIN quiz_ratings qr ON q.quiz_id = qr.quiz_id
+                    WHERE q.lang=$1
+                    GROUP BY q.quiz_id`;
     const params = [req.params.lang];
     console.log('params:', params);
     handleRequest(req, res, query, params);

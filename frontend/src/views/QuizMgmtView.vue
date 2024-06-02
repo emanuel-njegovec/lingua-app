@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <TheHeader></TheHeader>
         <ul>
             <QuizEditListItem v-for="quiz in quizzes" :key="quiz.id" :quiz="quiz" @remove="removeItem"></QuizEditListItem>
         </ul>
@@ -10,6 +11,7 @@
 
 <script setup>
 import QuizEditListItem from '../components/QuizEditListItem.vue';
+import TheHeader from '@/components/TheHeader.vue';
 import Button from 'primevue/button';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';

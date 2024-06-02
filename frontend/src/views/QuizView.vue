@@ -5,6 +5,8 @@
             <div class="input-form">
                 <InputText v-model="quizData.quiz_name" placeholder="Enter the name of the quiz" @input="handleInputChange" />
                 <Textarea v-model="quizData.description" placeholder="Enter the description of the quiz" @input="handleInputChange" />
+                <p>Difficulty: {{ quizData.difficulty }}</p>
+                <Slider v-model="quizData.difficulty" :min="1" :max="5" @change="handleInputChange" />
             </div>
             <ul v-if="quizData">
                 <QuestionListItem v-for="question in multipleChoice" :key="'multipleChoice-' + question.question_id" :question="question" @remove_question="removeItem('multipleChoice', question)"></QuestionListItem>
@@ -12,13 +14,13 @@
                 <QuestionListItem v-for="question in fillIn" :key="'fillIn-' + question.question_id" :question="question" @remove_question="removeItem('fillIn', question)"></QuestionListItem>
             </ul>
         </div>
-        <Button icon="pi pi-plus" @click="visible = true"></Button>
+        <Button @click="visible = true">New question</Button>
         <Dialog v-model:visible="visible" modal header="Odaberi vrstu pitanja">
             <Button label="Ponuđeni odgovori" @click="newQuestion('multiple_choice')"></Button>
             <Button label="Upisivanje odgovora" @click="newQuestion('write_in')"></Button>
             <Button label="Nadopunjavanje" @click="newQuestion('fill_in')"></Button>
         </Dialog>
-        <Button icon="pi pi-save" @click="saveQuiz"></Button>
+        <Button @click="saveQuiz">Save</Button>
     </div>
 </template>
 
@@ -26,6 +28,7 @@
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import TheHeader from '@/components/TheHeader.vue';
+import Slider from 'primevue/slider';
 import QuestionListItem from '@/components/QuestionListItem.vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
@@ -43,7 +46,8 @@ const visible = ref(false);
 const quiz = ref({});
 const quizData = ref({
     quiz_name: '',
-    description: ''
+    description: '',
+    difficulty: 1
 });
 const multipleChoice = ref({});
 const writeIn = ref({});
@@ -144,6 +148,10 @@ ul {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.p-slider {
+    width: 50%;
 }
 
 </style>

@@ -7,7 +7,6 @@
 <script setup>
 import { useUserStore } from '@/store';
 import Button from 'primevue/button';
-//import axios from 'axios';
 import { API_URL } from '@/config';
 
 const user = useUserStore();

@@ -27,6 +27,14 @@ router.post('/save', async (req, res) => {
     handleRequest(req, res, query, params);
 });
 
+router.get('/user-quiz-results', async (req, res) => {
+    const query = `SELECT uqr.*
+                    FROM user_quiz_results uqr
+                    WHERE uqr.user_id=$1`;
+    const params = [req.user.id];
+    handleRequest(req, res, query, params);
+});
+
 router.get('/user-quiz-results/:quiz_id', async (req, res) => {
     const query = `SELECT uqr.*
                     FROM user_quiz_results uqr
@@ -35,5 +43,21 @@ router.get('/user-quiz-results/:quiz_id', async (req, res) => {
     handleRequest(req, res, query, params);
 });
 
+router.get('/quiz/:quiz_id', async (req, res) => {
+    const query = `SELECT uqr.correct_answers, uqr.incorrect_answers, uqr.started_at, uqr.completed_at
+                    FROM user_quiz_results uqr
+                    WHERE uqr.quiz_id=$1`;
+    const params = [req.params.quiz_id];
+    handleRequest(req, res, query, params);
+});
+
+router.post('/rate-quiz', async (req, res) => {
+    const query = `INSERT INTO quiz_ratings (user_id, quiz_id, rating)
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (user_id, quiz_id)
+                    DO UPDATE SET rating=EXCLUDED.rating`;
+    const params = [req.user.id, req.body.quiz_id, req.body.rating];
+    handleRequest(req, res, query, params);
+});
 
 module.exports = router;

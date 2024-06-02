@@ -1,21 +1,32 @@
 <template>
     <div class="container">
-        <div v-if="quizzes">
-            <h1>Odigrani kvizovi</h1>
-            <ul>
-                <PlayedQuizListItem v-for="quiz in quizzes" :key="quiz.quiz_id" :quiz="quiz" @remove="removeItem"></PlayedQuizListItem>
-            </ul>
-        </div>
+        <ProfileComponent></ProfileComponent>
+        <Accordion :multiple="true">
+            <AccordionTab header="Odigrani kvizovi">
+                <div v-if="quizzes">
+                    <ul>
+                        <PlayedQuizListItem v-for="quiz in quizzes" :key="quiz.quiz_id" :quiz="quiz" @remove="removeItem"></PlayedQuizListItem>
+                    </ul>
+                </div>
+            </AccordionTab>
+            <AccordionTab header="Statistika">
+                <StatisticsComponent></StatisticsComponent>
+            </AccordionTab>
+        </Accordion>
     </div>
 </template>
 
 
 <script setup>
-import PlayedQuizListItem from '@/components/PlayedQuizListItem.vue';
+import PlayedQuizListItem from './PlayedQuizListItem.vue';
+import ProfileComponent from './ProfileComponent.vue';
+import StatisticsComponent from './StatisticsComponent.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useLanguageStore } from '@/store';
 import { API_URL } from '@/config';
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
 
 const quizzes = ref([]);
 const isLoading = ref(true);

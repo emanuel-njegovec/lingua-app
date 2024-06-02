@@ -26,7 +26,7 @@
             <p>Rate the quiz:</p>
             <Rating v-model="rating" cancel="false" :readonly="false" :stars="5" />
             <div class="dialog-buttons">
-                <Button label="OK" @click="quitQuiz" />
+                <Button label="OK" @click="goHome" />
                 <Button label="Play again"/>
             </div>
         </Dialog>
@@ -71,6 +71,11 @@ const quitQuiz = () => {
     router.go(-1);
 }
 
+const goHome = () => {
+    router.go(-1);
+    saveRating();
+}
+
 const finishQuiz = async () => {
     const endTime = new Date().toISOString();
     const data = {
@@ -86,6 +91,20 @@ const finishQuiz = async () => {
     const result_id = res.data[0].result_id;
     console.log(result_id);
     isFinished.value = true;
+    saveRating();
+}
+
+const saveRating = async () => {
+    if (!rating.value) {
+        return;
+    }
+    const data = {
+        quiz_id: param,
+        rating: rating.value
+    }
+    console.log(data);
+    const res = await axios.post(`${API_URL}/stats/rate-quiz`, data, { withCredentials: true });
+    console.log(res);
 }
 
 onMounted(async () => {
