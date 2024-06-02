@@ -16,6 +16,17 @@ const handleRequest = async (req, res, query, params) => {
     }
 }
 
+router.get('/all-played/:lang', async (req, res) => {
+    const query = `SELECT DISTINCT ON (q.quiz_id) 
+                    q.*, uqr.correct_answers, uqr.incorrect_answers, uqr.started_at, uqr.completed_at
+                    FROM user_quiz_results uqr
+                    JOIN quizzes q ON uqr.quiz_id = q.quiz_id
+                    WHERE uqr.user_id=$1 AND q.lang=$2
+                    ORDER BY q.quiz_id, uqr.completed_at DESC`;
+    const params = [req.user.id, req.params.lang];
+    handleRequest(req, res, query, params);
+});
+
 router.get('/all/:lang', async (req, res) => {
     console.log('req.params.lang:', req.params.lang);
     const query = "SELECT * FROM quizzes WHERE lang=$1";

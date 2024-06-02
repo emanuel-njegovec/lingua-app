@@ -1,0 +1,58 @@
+<template>
+    <div class="container">
+        <div v-if="quizzes">
+            <h1>Odigrani kvizovi</h1>
+            <ul>
+                <PlayedQuizListItem v-for="quiz in quizzes" :key="quiz.quiz_id" :quiz="quiz" @remove="removeItem"></PlayedQuizListItem>
+            </ul>
+        </div>
+    </div>
+</template>
+
+
+<script setup>
+import PlayedQuizListItem from '@/components/PlayedQuizListItem.vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useLanguageStore } from '@/store';
+import { API_URL } from '@/config';
+
+const quizzes = ref([]);
+const isLoading = ref(true);
+
+const languageStore = useLanguageStore();
+
+const removeItem = (quizToRemove) => {
+    console.log('remove', quizToRemove);
+    const index = quizzes.value.findIndex(quiz => quiz.quiz_id === quizToRemove);
+    if (index !== -1) {
+        quizzes.value.splice(index, 1);
+    }
+};
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${API_URL}/quiz/all-played/${languageStore.language}`, { withCredentials: true });
+        quizzes.value = response.data;
+        console.log('there', quizzes.value);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        isLoading.value = false;
+    }
+});
+
+</script>
+
+<style scoped>
+.p-button {
+    height: 60px;
+    width: 60px;
+}
+ul {
+    all: unset;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+</style>

@@ -23,7 +23,7 @@ const routes = [
         try {
           const userStore = useUserStore();
           const { data: [userData] } = await axios.get(API_URL + '/auth/profile', { withCredentials: true });
-          const { username, user_id: userID, user_role } = userData;
+          const { username, id: userID, user_role } = userData;
           userStore.username = username;
           userStore.userID = userID;
           userStore.user_role = user_role;
@@ -57,7 +57,7 @@ const routes = [
       component: PlayQuizView,
       name: 'play-quiz',
       meta: { requiresAuth: true }
-    }
+    },
 ];
 
 const router = createRouter({

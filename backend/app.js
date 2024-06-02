@@ -11,6 +11,7 @@ const authRouter = require('./routes/authRouter');
 const apiRouter = require('./routes/apiRouter');
 const quizRouter = require('./routes/quizRouter');
 const questionRouter = require('./routes/questionRouter');
+const statsRouter = require('./routes/statsRouter');
 
 const PORT = 3000;
 
@@ -39,6 +40,7 @@ app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 app.use('/quiz', quizRouter);
 app.use('/question', questionRouter);
+app.use('/stats', statsRouter);
 
 app.listen(PORT, (error) =>{ 
 	if(!error) 

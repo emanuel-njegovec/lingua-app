@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', {
         username: null,
         userID: null
     }),
+    persist: true,
     actions: {
         async fetchUserData() {
         try {

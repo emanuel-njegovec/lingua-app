@@ -5,7 +5,7 @@
         </template>
         <template #content>
             <p>{{ quiz.description }}</p>
-            <Button icon="pi pi-play" aria-label="Start" @click="playQuiz"></Button>
+            <Button aria-label="Start" @click="playQuiz">Play</Button>
         </template>    
     </Card>
 </template>

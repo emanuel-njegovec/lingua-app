@@ -34,7 +34,7 @@ const props = defineProps({
     question: Object
 });
 
-const emit = defineEmits(['question-answered']);
+const emit = defineEmits(['question-correct, question-incorrect']);
 
 const answer = ref('');
 
@@ -46,6 +46,7 @@ const checkAnswer = () => {
             summary: 'Correct',
             detail: 'Correct answer'
         };
+        emit('question-correct');
     } else {
         console.log('Incorrect');
         message.value = {
@@ -53,8 +54,8 @@ const checkAnswer = () => {
             summary: 'Incorrect',
             detail: 'Incorrect answer'
         };
+        emit('question-incorrect');
     }
-    emit('question-answered');
     isDisabled.value = true;
 };
 

@@ -17,7 +17,7 @@
                         </Button>
                     </div>
                     <transition-group name="p-message" tag="div">
-                        <Message v-if="selectedButton" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
+                        <Message v-if="showMessage" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
                     </transition-group>
                 </div>
             </template>    
@@ -37,9 +37,10 @@ const props = defineProps({
     question: Object
 });
 
-const emit = defineEmits(['question-answered']);
+const emit = defineEmits(['question-correct, question-incorrect']);
 
 const selectedButton = ref(null);
+const showMessage = ref(false);
 const message = ref({});
 
 const shuffledAnswers = computed(() =>{
@@ -62,6 +63,7 @@ const checkAnswer = (index) => {
             summary: 'Correct',
             detail: 'Correct answer'
         };
+        emit('question-correct');
     } else {
         console.log('Incorrect');
         message.value = {
@@ -69,9 +71,10 @@ const checkAnswer = (index) => {
             summary: 'Incorrect',
             detail: 'Incorrect answer'
         };
+        emit('question-incorrect');
     }
-    emit('question-answered');
     selectedButton.value = index;
+    showMessage.value = true;
 };
 
 function shuffleArray(array) {

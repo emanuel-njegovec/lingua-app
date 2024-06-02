@@ -3,13 +3,10 @@
         <TheHeader></TheHeader>
         <TabView>
             <TabPanel header="Home">
-                <MyQuizzes></MyQuizzes>
+                <HomePanel></HomePanel>
             </TabPanel>
             <TabPanel header="Kvizovi">
                 <UserQuizzes></UserQuizzes>
-            </TabPanel>
-            <TabPanel header="Profil">
-                <ProfileComponent></ProfileComponent>
             </TabPanel>
         </TabView>
     </div>
@@ -20,8 +17,7 @@
 import TheHeader from '../components/TheHeader.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-import ProfileComponent from '../components/ProfileComponent.vue';
-import MyQuizzes from '../components/MyQuizzes.vue';
+import HomePanel from '../components/HomePanel.vue';
 import UserQuizzes from '../components/UserQuizzes.vue';
 
 </script>
