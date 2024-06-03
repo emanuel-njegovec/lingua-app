@@ -3,7 +3,7 @@
         <Button label="Manage quizzes" @click="manageQuizzes" v-if="userRole === 'admin'"/>
         <DataView :value="quizzes" :sortOrder="sortOrder" :sortField="sortField">
             <template #header>
-                <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" @change="onSortChange($event)" placeholder="Sort by rating" />
+                <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" @change="onSortChange($event)" placeholder="Sort by" />
             </template>
             <template #list="slotProps">
                 <div v-for="(item, index) in slotProps.items" :key="index">
@@ -13,7 +13,6 @@
         </DataView>
     </div>
 </template>
-
 
 <script setup>
 import Button from 'primevue/button';
@@ -54,20 +53,25 @@ const sortKey = ref();
 const sortOrder = ref();
 const sortField = ref();
 const sortOptions = ref([
-    { label: 'Ascending', value: 1 },
-    { label: 'Descending', value: -1 }
+    { label: 'Rating Ascending', value: { field: 'average_rating', order: 1 } },
+    { label: 'Rating Descending', value: { field: 'average_rating', order: -1 } },
+    { label: 'Difficulty Ascending', value: { field: 'difficulty', order: 1 } },
+    { label: 'Difficulty Descending', value: { field: 'difficulty', order: -1 } },
+    { label: 'Date Ascending', value: { field: 'created_at', order: 1 } },
+    { label: 'Date Descending', value: { field: 'created_at', order: -1 } }
 ]);
+
 const onSortChange = (event) => {
-    const value = event.value.value;
-    quizzes.value.sort((a, b) => {
-        if (value === 1) {
-            return a.average_rating - b.average_rating;
+    const { field, order } = event.value;
+    const sortedQuizzes = [...quizzes.value].sort((a, b) => {
+        if (order === 1) {
+            return a[field] > b[field] ? 1 : -1;
         } else {
-            return b.average_rating - a.average_rating;
+            return a[field] < b[field] ? 1 : -1;
         }
     });
+    quizzes.value = sortedQuizzes;  // Replace the array reference
 };
-
 </script>
 
 <style scoped>

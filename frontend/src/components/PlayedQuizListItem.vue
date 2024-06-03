@@ -19,9 +19,7 @@
                     <Column field="score" header="Score" :sortable="true"></Column>
                 </DataTable>
             </Dialog>
-        
         </template>
-
     </Card>
 </template>
 
@@ -35,6 +33,7 @@ import { ref, defineProps, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { API_URL } from '@/config';
+import { formatDate } from '@/utils';
 
 const router = useRouter();
 
@@ -51,14 +50,6 @@ watch(displayInfo, (value) => {
         handleDialogOpen();
     }
 });
-
-//eslint-disable-next-line
-const formatDate = (datetime) => {
-    const date = new Date(datetime);
-    const timezoneOffset = date.getTimezoneOffset() * 60 * 1000;
-    const localDate = new Date(date.getTime() - timezoneOffset);
-    return localDate.toLocaleString('en-GB');
-};
 
 const handleDialogOpen = async () => {
     try {
