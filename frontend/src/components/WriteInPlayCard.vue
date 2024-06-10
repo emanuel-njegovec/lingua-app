@@ -63,8 +63,6 @@ const checkAnswer = () => {
 
 <style scoped>
 .p-card {
-    background-color: #1D3557;
-    color: aliceblue;
     margin-left: 10px;
     margin-right: 10px;
     height: 100%;

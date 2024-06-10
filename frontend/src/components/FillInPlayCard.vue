@@ -27,6 +27,8 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import { ref, defineProps, defineEmits } from 'vue';
+import axios from 'axios';
+import { API_URL } from '@/config';
 import Image from 'primevue/image';
 
 // eslint-disable-next-line
@@ -37,31 +39,39 @@ const props = defineProps({
 const message = ref({});
 const isDisabled = ref(false);
 
+// eslint-disable-next-line
 const emit = defineEmits(['question-correct, question-incorrect']);
 
 const text_split = props.question.question_text.split(' ');
 const correct_answer = ref(props.question.correct_ans);
 const answer = ref('');
 
-const checkAnswer = () => {
-    if (answer.value === correct_answer.value) {
-        console.log('Correct');
-        message.value = {
-            severity: 'success',
-            summary: 'Correct',
-            detail: 'Correct answer'
-        };
-        emit('question-correct');
-    } else {
-        console.log('Incorrect');
-        message.value = {
-            severity: 'error',
-            summary: 'Incorrect',
-            detail: 'Incorrect answer'
-        };
-        emit('question-incorrect');
+const checkAnswer = async () => {
+    try {
+        const response = await axios.post(`${API_URL}/api/check-answer`, {
+            user_answer: answer.value,
+            correct_answer: correct_answer.value
+        }, { withCredentials: true });
+        console.log(response.data);
+        if (response.data.result === 'correct') {
+            message.value = {
+                severity: 'success',
+                summary: 'Correct',
+                detail: response.data.explanation
+            };
+            emit('question-correct');
+        } else {
+            message.value = {
+                severity: 'error',
+                summary: 'Incorrect',
+                detail: response.data.explanation
+            };
+            emit('question-incorrect');
+        }
+        isDisabled.value = true;
+    } catch (error) {
+        console.error(error);
     }
-    isDisabled.value = true;
 };
 
 
@@ -69,8 +79,6 @@ const checkAnswer = () => {
 
 <style scoped>
 .p-card {
-    background-color: #1D3557;
-    color: aliceblue;
     margin-left: 10px;
     margin-right: 10px;
     height: 100%;

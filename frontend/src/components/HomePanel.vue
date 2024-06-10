@@ -1,6 +1,5 @@
 <template>
     <div class="container">
-        <ProfileComponent></ProfileComponent>
         <Accordion :multiple="true">
             <AccordionTab header="Odigrani kvizovi">
                 <div v-if="quizzes">
@@ -19,7 +18,6 @@
 
 <script setup>
 import PlayedQuizListItem from './PlayedQuizListItem.vue';
-import ProfileComponent from './ProfileComponent.vue';
 import StatisticsComponent from './StatisticsComponent.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';

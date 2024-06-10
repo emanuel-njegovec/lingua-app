@@ -28,7 +28,6 @@ router.get('/all-played/:lang', async (req, res) => {
 });
 
 router.get('/all/:lang', async (req, res) => {
-    //console.log('req.params.lang:', req.params.lang);
     const query = `SELECT q.*, AVG(qr.rating) AS average_rating
                     FROM quizzes q
                     LEFT JOIN quiz_ratings qr ON q.quiz_id = qr.quiz_id

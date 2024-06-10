@@ -3,6 +3,12 @@ const router = express.Router();
 const { fetchDataFromDB, pool } = require('../db');
 const multer = require('multer');
 const { bucket } = require('../firebase');
+const OpenAI = require('openai');
+require('dotenv').config();
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 const handleRequest = async (req, res, query, params) => {
     if (req.isAuthenticated()) {
@@ -50,6 +56,24 @@ router.post('/upload-image/:question_id', upload.single('photo'), async (req, re
             }
         });
         blobStream.end(req.file.buffer);
+    } else {
+        res.status(401).json({ error: 'User is not authenticated' });
+    }
+});
+
+router.post('/check-answer', async (req, res) => {
+    if (req.isAuthenticated()) {
+        const { user_answer, correct_answer } = req.body;
+        const response = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: 'You are a language expert providing feedback on quiz questions for a language learning application. Provide every response in the form of a JSON object with two fields: result which can be either correct, incorrect or partially correct and explanation which is a brief explanation if the answer is incorrect. Provide the explanation in Croatian and pretend you are talking to the user directly.' },
+                { role: 'user', content: `Evaluate the user's answer ${user_answer} with the correct answer ${correct_answer}` },
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' },
+        });
+        console.log('Response:', response.choices[0].message.content);
+        res.json(JSON.parse(response.choices[0].message.content));
     } else {
         res.status(401).json({ error: 'User is not authenticated' });
     }

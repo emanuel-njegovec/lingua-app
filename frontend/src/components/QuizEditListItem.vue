@@ -99,10 +99,6 @@ const deleteQuiz = async () => {
 </script>
 
 <style scoped>
-.p-card {
-    background-color: #1D3557;
-    color: aliceblue;
-}
 
 
 </style>

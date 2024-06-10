@@ -9,7 +9,8 @@ export const useUserStore = defineStore('user', {
         authenticated: false,
         user_role: null,
         username: null,
-        userID: null
+        userID: null,
+        darkMode: false,
     }),
     persist: true,
     actions: {

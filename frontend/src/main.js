@@ -5,7 +5,7 @@ import PrimeVue from 'primevue/config'
 import { createPinia } from 'pinia' 
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate'
 import './registerServiceWorker'
-import "primevue/resources/themes/aura-light-green/theme.css"; //theme
+//import "primevue/resources/themes/lara-dark-indigo/theme.css"; //theme
 import "primevue/resources/primevue.min.css"; //core CSS
 import "primeicons/primeicons.css"; //icons
 import Tooltip from 'primevue/tooltip'
