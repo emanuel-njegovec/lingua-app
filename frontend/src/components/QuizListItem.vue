@@ -1,14 +1,14 @@
 <template>
     <Card v-if="quiz">
-        <template #title>
-            {{ quiz.quiz_name }}
-        </template>
         <template #content>
-            <p>{{ quiz.description }}</p>
-            <p>{{ quiz.difficulty }}</p>
-            <p>{{ formatDate(quiz.created_at) }}</p>
-            <Rating v-model="rating" :cancel="false" :readonly="true" :stars="5" />
-            <Button aria-label="Start" @click="playQuiz">Play</Button>
+            <div>
+                <h2>{{ quiz.quiz_name }}</h2>
+                <p>{{ quiz.description }}</p>
+                <p>Težina kviza: {{ quiz.difficulty }}</p>
+                <Rating v-model="rating" :cancel="false" :readonly="true" :stars="5" />
+                <p>{{ formatDate(quiz.created_at) }}</p>
+            </div>
+            <Button label="Pokreni" @click="playQuiz"></Button>
         </template>    
     </Card>
 </template>
@@ -36,6 +36,10 @@ const playQuiz = () => {
 </script>
 
 <style scoped>
-
+:deep(.p-card-content) {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
 
 </style>

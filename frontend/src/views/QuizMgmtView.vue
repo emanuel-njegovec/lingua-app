@@ -1,11 +1,17 @@
 <template>
     <div class="container">
         <TheHeader></TheHeader>
-        <ul>
-            <QuizEditListItem v-for="quiz in quizzes" :key="quiz.id" :quiz="quiz" @remove="removeItem"></QuizEditListItem>
-        </ul>
-        <Button label="Add new quiz" @click="newQuiz"/>
-        <Button label="Finish" @click="goHome"/>
+        <div class="content">
+            <ul>
+                <QuizEditListItem v-for="quiz in quizzes" :key="quiz.id" :quiz="quiz" @remove="removeItem"></QuizEditListItem>
+            </ul>
+            <Card class="bottom-btns">
+                <template #content>
+                    <Button label="Dodaj novi kviz" @click="newQuiz"/>
+                    <Button label="Završi" @click="goHome"/>
+                </template>
+            </Card>
+        </div>
     </div>
 </template>
 
@@ -13,6 +19,7 @@
 import QuizEditListItem from '../components/QuizEditListItem.vue';
 import TheHeader from '@/components/TheHeader.vue';
 import Button from 'primevue/button';
+import Card from 'primevue/card';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -60,8 +67,26 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.content {
+    width: 100%;
+}
 ul {
     list-style-type: none;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    
+}
+:deep(.bottom-btns) {
+    position: fixed;
+    bottom: 0px;
+    width: 100%; 
+    box-shadow: 0px -2px 10px 0px rgba(0,0,0,0.1);  
+}
+@media (min-width: 768px) {
+    ul {
+        width: 800px;
+    }
 }
 </style>

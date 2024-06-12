@@ -1,13 +1,15 @@
 <template>
     <Card v-if="question">
-        <template #title>
-            {{ question.question_text }}
-        </template>
         <template #content>
-            <Image v-if="question.image_url" :src="question.image_url" alt="Question Image" width="250"/>
-            <p>{{ question.correct_ans }}</p>
-            <Button icon="pi pi-pencil" aria-label="Edit" @click="getQuestion"></Button>
-            <Button icon="pi pi-trash" aria-label="Delete" @click="deleteQuestion"></Button>
+            <div class="question-item-content">
+                <h2>{{ question.question_text }}</h2>
+                <Image v-if="question.image_url" :src="question.image_url" alt="Question Image" width="250"/>
+                <p>{{ question.correct_ans }}</p>
+            </div>
+            <div class="question-item-btns">
+                <Button label="Uredi" @click="getQuestion"></Button>
+                <Button label="Obriši" @click="deleteQuestion" severity="danger"></Button>
+            </div>
         </template>
     </Card>
 </template>
@@ -47,6 +49,18 @@ const deleteQuestion = async () => {
 </script>
 
 <style scoped>
-
-
+:deep(.p-card-content) {
+    display: flex;
+    justify-content: space-around;
+}
+.question-item-btns {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    flex: 1;
+}
+.question-item-content {
+    flex: 3;
+}
 </style>

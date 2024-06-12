@@ -1,14 +1,16 @@
 <template>
     <Card v-if="quiz">
-        <template #title>
-            {{ quiz.quiz_name }}
-        </template>
         <template #content>
-            <p>{{ quiz.description }}</p>
-            <Button aria-label="Start" @click="playQuiz">Play again</Button>
-            <Button aria-label="Info" @click="displayInfo = true">View more info</Button>
-            <p>Last played at: {{ formatDate(quiz.started_at) }}</p>
-            <p>Last score: {{ quiz.correct_answers }} / {{ quiz.correct_answers + quiz.incorrect_answers }}</p>
+            <div class="quiz-item-content">
+                <h2>{{ quiz.quiz_name }}</h2>
+                <p>{{ quiz.description }}</p>
+                <p>Last score: {{ quiz.correct_answers }} / {{ quiz.correct_answers + quiz.incorrect_answers }}</p>
+                <p>Last played at: {{ formatDate(quiz.started_at) }}</p>
+            </div>
+            <div class="quiz-item-buttons">
+                <Button aria-label="Start" @click="playQuiz">Play again</Button>
+                <Button aria-label="Info" @click="displayInfo = true">View more info</Button>
+            </div>
             
             <Dialog v-model:visible="displayInfo" modal draggable="false" header="History" @hide="displayInfo = false" :style="{ width: '900px' }">
                 <DataTable :value="history" :sortField="'started_at'" :sortOrder="-1">
@@ -74,5 +76,23 @@ const playQuiz = () => {
 </script>
 
 <style scoped>
+
+.p-card-title {
+    display: none;
+}
+:deep(.p-card-content) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+}
+.quiz-item-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
 
 </style>

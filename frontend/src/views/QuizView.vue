@@ -1,32 +1,46 @@
 <template>
-    <TheHeader />
-    <div class="container2">
-        <div v-if="quiz">
-            <div class="input-form">
-                <InputText v-model="quizData.quiz_name" placeholder="Enter the name of the quiz" @input="handleInputChange" />
-                <Textarea v-model="quizData.description" placeholder="Enter the description of the quiz" @input="handleInputChange" />
-                <p>Difficulty: {{ quizData.difficulty }}</p>
-                <Slider v-model="quizData.difficulty" :min="1" :max="5" @change="handleInputChange" />
+    <div class="container">
+        <TheHeader></TheHeader>
+        <div class="content">
+            <div v-if="quiz">
+                <Card class="editing-card">
+                    <template #content>
+                        <div class="edit-form">
+                            <label for="quiz_name"><h2>Ime kviza</h2></label>
+                            <InputText id="quiz_name" v-model="quizData.quiz_name" placeholder="Enter the name of the quiz" @input="handleInputChange" />
+                            <label for="description"><h2>Opis kviza</h2></label>
+                            <Textarea id="description" v-model="quizData.description" placeholder="Enter the description of the quiz" @input="handleInputChange" />
+                            <label for="difficulty"><h2>Difficulty: {{ quizData.difficulty }}</h2></label>
+                            <Slider id="difficulty" v-model="quizData.difficulty" :min="1" :max="5" @change="handleInputChange" />
+                        </div>
+                    </template>
+                </Card>
+                <h1>Pitanja</h1>
+                <ul v-if="quizData">
+                    <QuestionListItem v-for="question in multipleChoice" :key="'multipleChoice-' + question.question_id" :question="question" @remove_question="removeItem('multipleChoice', question)"></QuestionListItem>
+                    <QuestionListItem v-for="question in writeIn" :key="'writeIn-' + question.question_id" :question="question" @remove_question="removeItem('writeIn', question)"></QuestionListItem>
+                    <QuestionListItem v-for="question in fillIn" :key="'fillIn-' + question.question_id" :question="question" @remove_question="removeItem('fillIn', question)"></QuestionListItem>
+                </ul>
             </div>
-            <ul v-if="quizData">
-                <QuestionListItem v-for="question in multipleChoice" :key="'multipleChoice-' + question.question_id" :question="question" @remove_question="removeItem('multipleChoice', question)"></QuestionListItem>
-                <QuestionListItem v-for="question in writeIn" :key="'writeIn-' + question.question_id" :question="question" @remove_question="removeItem('writeIn', question)"></QuestionListItem>
-                <QuestionListItem v-for="question in fillIn" :key="'fillIn-' + question.question_id" :question="question" @remove_question="removeItem('fillIn', question)"></QuestionListItem>
-            </ul>
+            <Card class="quiz-edit-buttons">
+                <template #content>
+                    <Button label="Dodaj pitanje" @click="visible = true"></Button>
+                    <Button label="Spremi" @click="saveQuiz"></Button>
+                </template>
+            </Card>
+            <Dialog v-model:visible="visible" modal header="Odaberi vrstu pitanja">
+                <Button label="Ponuđeni odgovori" @click="newQuestion('multiple_choice')"></Button>
+                <Button label="Upisivanje odgovora" @click="newQuestion('write_in')"></Button>
+                <Button label="Nadopunjavanje" @click="newQuestion('fill_in')"></Button>
+            </Dialog>
         </div>
-        <Button @click="visible = true">New question</Button>
-        <Dialog v-model:visible="visible" modal header="Odaberi vrstu pitanja">
-            <Button label="Ponuđeni odgovori" @click="newQuestion('multiple_choice')"></Button>
-            <Button label="Upisivanje odgovora" @click="newQuestion('write_in')"></Button>
-            <Button label="Nadopunjavanje" @click="newQuestion('fill_in')"></Button>
-        </Dialog>
-        <Button @click="saveQuiz">Save</Button>
     </div>
 </template>
 
 <script setup>
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
+import Card from 'primevue/card';
 import TheHeader from '@/components/TheHeader.vue';
 import Slider from 'primevue/slider';
 import QuestionListItem from '@/components/QuestionListItem.vue';
@@ -91,12 +105,13 @@ onMounted(async () => {
         const response = await axios.get(`${API_URL}/quiz/${param}`, { withCredentials: true });
         //console.log('there', response.data);
         quiz.value = response.data;
-        //console.log(quiz.value);
+        console.log(quiz.value);
         multipleChoice.value = quiz.value.multiple_choice;
         writeIn.value = quiz.value.write_in;
         fillIn.value = quiz.value.fill_in;
         quizData.value.quiz_name = quiz.value.quiz_name;
         quizData.value.description = quiz.value.quiz_description;
+        quizData.value.difficulty = quiz.value.difficulty;
         console.log(quizData.value);
         console.log(multipleChoice.value)
         console.log(writeIn.value);
@@ -122,36 +137,54 @@ const handleInputChange = () => {
         }
     }, 1000);
 }
-
-
-
-
 </script>
 
 <style scoped>
-.container2 {
+.content {
     width: 100%;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
+    margin-bottom: 200px;
 }
 
-.input-form {
+:deep(.editing-card) {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin: 10px;
 }
-
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
 ul {
     all: unset;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-
 .p-slider {
     width: 50%;
 }
-
+:deep(.quiz-edit-buttons) {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0px -2px 10px 0px rgba(0,0,0,0.1);
+}
+#quiz_name {
+    width: 80%;
+}
+#description {
+    width: 80%;
+}
+@media (min-width: 768px) {
+    :deep(.editing-card) {
+        width: 800px;
+    }
+}
 </style>

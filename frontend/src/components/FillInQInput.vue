@@ -1,33 +1,36 @@
 <template>
-    <div class="container">
-        <FileUpload mode="basic" auto="true" name="photo" :url="uploadUrl" customUpload @uploader="uploadHandler" withCredentials @upload="onUpload" accept="image/*" :maxFileSize="1000000">
-        </FileUpload>
-        <Image v-if="imageUrl" :src="imageUrl" width="400"/>
-        <FloatLabel>
-            <Chips id="qtext" v-model="input" separator=" ">
-                <template #chip="slotProps">
-                    <div @click="setCorrectAnswer">
-                        <span>{{ slotProps.value }}</span>
-                    </div>
-                </template>
-            </Chips>
-            <label for="qtext">Pitanje</label>
-        </FloatLabel>
-        
-        <FloatLabel>
-            <InputText id="correct-ans" v-model="questionData.correct_ans" @input="handleInputChange" />
-            <label for="correct-ans">Točan odgovor</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="hint" v-model="questionData.ans_hint" @input="handleInputChange" />
-            <label for="hint">Pomoć</label>
-        </FloatLabel>
-        <Button icon="pi pi-save" @click="saveQuestion"></Button>
-    </div>
+    <Card>
+        <template #content>
+            <FileUpload mode="basic" auto="true" name="photo" :url="uploadUrl" customUpload @uploader="uploadHandler" withCredentials @upload="onUpload" accept="image/*" :maxFileSize="1000000" chooseLabel="Dodaj sliku">
+            </FileUpload>
+            <Image v-if="imageUrl" :src="imageUrl" width="400"/>
+            <FloatLabel>
+                <Chips id="qtext" v-model="input" separator=" ">
+                    <template #chip="slotProps">
+                        <div @click="setCorrectAnswer">
+                            <span>{{ slotProps.value }}</span>
+                        </div>
+                    </template>
+                </Chips>
+                <label for="qtext">Pitanje</label>
+            </FloatLabel>
+            
+            <FloatLabel>
+                <Textarea class="txt-input" id="correct-ans" v-model="questionData.correct_ans" @input="handleInputChange" autoResize rows="1"/>
+                <label for="correct-ans">Točan odgovor</label>
+            </FloatLabel>
+            <FloatLabel>
+                <Textarea class="txt-input" id="hint" v-model="questionData.ans_hint" @input="handleInputChange" autoResize rows="1"/>
+                <label for="hint">Pomoć</label>
+            </FloatLabel>
+            <Button @click="saveQuestion">Spremi</Button>
+        </template>
+    </Card>
 </template>
 
 <script setup>
-import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Card from 'primevue/card';
 import FloatLabel from 'primevue/floatlabel';
 import FileUpload from 'primevue/fileupload';
 import Image from 'primevue/image';
@@ -50,7 +53,7 @@ const input = ref([]);
 
 const router = useRouter();
 
-const uploadUrl = `${API_URL}/api/upload-image/${router.currentRoute.value.params.question_id}`;
+const uploadUrl = `${API_URL}/question/upload-image/${router.currentRoute.value.params.question_id}`;
 
 const questionData = ref({
     question_text: '',
@@ -138,11 +141,21 @@ const handleInputChange = () => {
 </script>
 
 <style scoped>
-.container {
+:deep(.p-card-content) {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 30px;
+}
+
+@media (min-width: 768px) {
+    :deep(.p-card-content) {
+        width: 800px;
+    }
+    :deep(.txt-input) {
+        width: 500px;
+    }
 }
 
 </style>

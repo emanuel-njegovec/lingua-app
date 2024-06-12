@@ -65,6 +65,7 @@ router.get('/:quiz_id', async (req, res) => {
             const data = {
                 quiz_name: data_quiz[0].quiz_name,
                 quiz_description: data_quiz[0].description,
+                difficulty: data_quiz[0].difficulty,
                 multiple_choice: data_multiple_choice,
                 write_in: data_write_in,
                 fill_in: data_fill_in

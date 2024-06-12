@@ -1,36 +1,39 @@
 <template>
-    <div class="container">
-        <FileUpload mode="basic" auto="true" name="photo" :url="uploadUrl" customUpload @uploader="uploadHandler" withCredentials @upload="onUpload" accept="image/*" :maxFileSize="1000000">
-        </FileUpload>
-        <Image v-if="imageUrl" :src="imageUrl" width="400"/>
-        <FloatLabel>
-            <InputText id="qtext" v-model="questionData.question_text" @input="handleInputChange" />
-            <label for="qtext">Pitanje</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="correct-ans" v-model="questionData.correct_ans" @input="handleInputChange" />
-            <label for="correct-ans">Točan odgovor</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans1" v-model="questionData.incorrect_ans_1" @input="handleInputChange" />
-            <label for="incorrect-ans1">Netočan odgovor 1</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans2" v-model="questionData.incorrect_ans_2" @input="handleInputChange" />
-            <label for="incorrect-ans2">Netočan odgovor 2</label>
-        </FloatLabel>
-        <FloatLabel>
-            <InputText id="incorrect-ans3" v-model="questionData.incorrect_ans_3" @input="handleInputChange" />
-            <label for="incorrect-ans3">Netočan odgovor 3</label>
-        </FloatLabel>
-        <Button icon="pi pi-save" @click="saveQuestion"></Button>
-    </div>
+    <Card>
+        <template #content>
+            <FileUpload mode="basic" auto="true" name="photo" :url="uploadUrl" customUpload @uploader="uploadHandler" withCredentials @upload="onUpload" accept="image/*" :maxFileSize="1000000" chooseLabel="Dodaj sliku">
+            </FileUpload>
+            <Image v-if="imageUrl" :src="imageUrl" width="400"/>
+            <FloatLabel>
+                <Textarea id="qtext" v-model="questionData.question_text" @input="handleInputChange" autoResize rows="1"/>
+                <label for="qtext">Pitanje</label>
+            </FloatLabel>
+            <FloatLabel>
+                <Textarea id="correct-ans" v-model="questionData.correct_ans" @input="handleInputChange" autoResize rows="1"/>
+                <label for="correct-ans">Točan odgovor</label>
+            </FloatLabel>
+            <FloatLabel>
+                <Textarea id="incorrect-ans1" v-model="questionData.incorrect_ans_1" @input="handleInputChange" autoResize rows="1"/>
+                <label for="incorrect-ans1">Netočan odgovor 1</label>
+            </FloatLabel>
+            <FloatLabel>
+                <Textarea id="incorrect-ans2" v-model="questionData.incorrect_ans_2" @input="handleInputChange" autoResize rows="1"/>
+                <label for="incorrect-ans2">Netočan odgovor 2</label>
+            </FloatLabel>
+            <FloatLabel>
+                <Textarea id="incorrect-ans3" v-model="questionData.incorrect_ans_3" @input="handleInputChange" autoResize rows="1"/>
+                <label for="incorrect-ans3">Netočan odgovor 3</label>
+            </FloatLabel>
+            <Button @click="saveQuestion">Spremi</Button>
+        </template>
+    </Card>
 </template>
 
 <script setup>
-import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import FloatLabel from 'primevue/floatlabel';
 import FileUpload from 'primevue/fileupload';
+import Card from 'primevue/card';
 import Image from 'primevue/image';
 import Button from 'primevue/button';
 import { ref, defineProps, onMounted } from 'vue';
@@ -48,7 +51,7 @@ const props = defineProps({
 
 const router = useRouter();
 
-const uploadUrl = `${API_URL}/api/upload-image/${router.currentRoute.value.params.question_id}`;
+const uploadUrl = `${API_URL}/question/upload-image/${router.currentRoute.value.params.question_id}`;
 
 const questionData = ref({
     question_text: '',
@@ -118,11 +121,22 @@ const handleInputChange = () => {
 </script>
 
 <style scoped>
-.container {
+
+:deep(.p-card-content) {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 30px;
+}
+
+@media (min-width: 768px) {
+    :deep(.p-card-content) {
+        width: 800px;
+    }
+    :deep(.p-inputtext) {
+        width: 500px;
+    }
 }
 
 </style>

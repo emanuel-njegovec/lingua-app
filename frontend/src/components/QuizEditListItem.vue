@@ -1,13 +1,15 @@
 <template>
     <Card v-if="quiz">
-        <template #title>
-            {{ quiz.quiz_name }}
-        </template>
         <template #content>
-            <p>{{ quiz.description }}</p>
-            <Button aria-label="Edit" @click="getQuiz">Edit</Button>
-            <Button aria-label="Stats" @click="showStats = true">Show stats</Button>
-            <Button aria-label="Delete" @click="deleteQuiz">Delete</Button>
+            <div class="list-item-content">
+                <h2>{{ quiz.quiz_name }}</h2>
+                <p>{{ quiz.description }}</p>
+            </div>
+            <div class="list-item-btns">
+                <Button label="Uredi" @click="getQuiz"></Button>
+                <Button label="Pregled statistike" @click="showStats = true"></Button>
+                <Button label="Obriši" severity="danger" @click="deleteQuiz"></Button>
+            </div>
             <Dialog header="Quiz stats" v-model:visible="showStats" modal="true" :style="{ width: '800px' }">
                 <Chart type="line" :data="data" />
                 <p>Prosječno vrijeme rješavanja kviza: {{ average_time_spent }}s</p>
@@ -99,6 +101,19 @@ const deleteQuiz = async () => {
 </script>
 
 <style scoped>
-
-
+.list-item-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+}
+.list-item-content {
+    flex: 3;
+}
+:deep(.p-card-content) {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem;
+}
 </style>

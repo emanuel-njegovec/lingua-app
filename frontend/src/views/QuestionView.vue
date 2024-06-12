@@ -1,8 +1,7 @@
 <template>
-    <div>
+    <div class="container">
         <TheHeader />
-        <div class="container">
-            <h1>Question</h1>
+        <div class="content">
             <MultipleChoiceQInput v-if="question && type === 'multiple_choice'" :question="question"/>
             <WriteInQInput v-if="question && type === 'write_in'" :question="question"/>
             <FillInQInput v-if="question && type === 'fill_in'" :question="question"/>
@@ -45,3 +44,10 @@ onMounted(async () => {
 
 
 </script>
+
+<style scoped>
+.content {
+    width: 100%;
+}
+
+</style>

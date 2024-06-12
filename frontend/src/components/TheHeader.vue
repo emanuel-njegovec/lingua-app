@@ -30,15 +30,15 @@ const user = useUserStore();
 
 let currentLanguage = {};
 if (languageStore.language === 'en') {
-    currentLanguage = { name: 'English', code: 'en' };
+    currentLanguage = { name: 'Engleski', code: 'en' };
 } else {
-    currentLanguage = { name: 'Korean', code: 'kr' };
+    currentLanguage = { name: 'Korejski', code: 'kr' };
 }
 
 const selectedLanguage = ref(currentLanguage);
 const languages = ref([
-    { name: 'English', code: 'en' },
-    { name: 'Korean', code: 'kr' },
+    { name: 'Engleski', code: 'en' },
+    { name: 'Korejski', code: 'kr' },
 ]);
 
 const languageChanged = (e) => {
@@ -97,11 +97,13 @@ onMounted(() => {
     display: flex;
     gap: 30px;
 }
-
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 95vw;
+}
+:deep(.p-card-body) {
+    padding: 0;
 }
 </style>

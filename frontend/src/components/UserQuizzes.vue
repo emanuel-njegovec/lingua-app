@@ -1,16 +1,20 @@
 <template>
     <div class="container">
-        <Button label="Manage quizzes" @click="manageQuizzes" v-if="userRole === 'admin'"/>
-        <DataView :value="quizzes" :sortOrder="sortOrder" :sortField="sortField">
-            <template #header>
-                <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" @change="onSortChange($event)" placeholder="Sort by" />
-            </template>
-            <template #list="slotProps">
-                <div v-for="(item, index) in slotProps.items" :key="index">
-                    <QuizListItem :quiz="item"></QuizListItem>
-                </div>
-            </template>
-        </DataView>
+        <Button label="Upravljanje kvizovima" @click="manageQuizzes" v-if="userRole === 'admin'"/>
+        <Card class="data-card">
+            <template #content>
+                <DataView :value="quizzes" :sortOrder="sortOrder" :sortField="sortField">
+                    <template #header>
+                        <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" @change="onSortChange($event)" placeholder="Sortiranje" />
+                    </template>
+                    <template #list="slotProps">
+                        <div v-for="(item, index) in slotProps.items" :key="index">
+                            <QuizListItem class="quiz-list-item" :quiz="item"></QuizListItem>
+                        </div>
+                    </template>
+                </DataView>
+            </template>            
+        </Card>
     </div>
 </template>
 
@@ -18,6 +22,7 @@
 import Button from 'primevue/button';
 import DataView from 'primevue/dataview';
 import Dropdown from 'primevue/dropdown';
+import Card from 'primevue/card';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import QuizListItem from '../components/QuizListItem.vue';
@@ -78,5 +83,13 @@ const onSortChange = (event) => {
 ul {
     list-style-type: none;
     padding: 0;
+}
+.data-card {
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+.quiz-list-item {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 </style>

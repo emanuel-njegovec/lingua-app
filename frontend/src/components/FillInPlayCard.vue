@@ -48,7 +48,7 @@ const answer = ref('');
 
 const checkAnswer = async () => {
     try {
-        const response = await axios.post(`${API_URL}/api/check-answer`, {
+        const response = await axios.post(`${API_URL}/question/check-answer`, {
             user_answer: answer.value,
             correct_answer: correct_answer.value
         }, { withCredentials: true });
