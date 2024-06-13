@@ -12,7 +12,7 @@
             </div>
             <Dialog header="Quiz stats" v-model:visible="showStats" modal="true" :style="{ width: '800px' }">
                 <Chart type="line" :data="data" />
-                <p>Prosječno vrijeme rješavanja kviza: {{ average_time_spent }}s</p>
+                <p>Prosječno vrijeme rješavanja kviza: {{ average_time_spent.toFixed(1) }}s</p>
             </Dialog>
         </template>    
     </Card>

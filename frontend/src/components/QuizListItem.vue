@@ -1,14 +1,16 @@
 <template>
     <Card v-if="quiz">
         <template #content>
-            <div>
+            <div class="quiz-item-content">
                 <h2>{{ quiz.quiz_name }}</h2>
                 <p>{{ quiz.description }}</p>
-                <p>Težina kviza: {{ quiz.difficulty }}</p>
+                <p>Težina kviza: {{ quiz.difficulty }}/5</p>
                 <Rating v-model="rating" :cancel="false" :readonly="true" :stars="5" />
                 <p>{{ formatDate(quiz.created_at) }}</p>
             </div>
-            <Button label="Pokreni" @click="playQuiz"></Button>
+            <div class="quiz-item-play-btn">
+                <Button label="Pokreni" @click="playQuiz"></Button>
+            </div>
         </template>    
     </Card>
 </template>
@@ -40,6 +42,12 @@ const playQuiz = () => {
     display: flex;
     justify-content: space-around;
     align-items: center;
+}
+.quiz-item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 3;
 }
 
 </style>

@@ -1,9 +1,9 @@
 <template>
     <div class="container">
         <div class="top-buttons">
-            <Button class="quit-button" aria-label="Quit" @click="quitQuiz" severity="danger">Quit</Button>
+            <Button class="quit-button" label="Odustani" @click="quitQuiz" severity="danger"></Button>
             <div v-tooltip="{ value: 'Answer all the questions first' }">
-                <Button aria-label="Finish" :disabled="correctAnswers + incorrectAnswers < combinedData.length" @click="finishQuiz">Finish quiz</Button>
+                <Button label="Završi rješavanje" :disabled="correctAnswers + incorrectAnswers < combinedData.length" @click="finishQuiz"></Button>
             </div>
         </div>
         <Carousel :value="combinedData" v-if="combinedData[0] && combinedData[0].question_id" :page="currentPage" >
@@ -17,8 +17,8 @@
             </template>
         </Carousel>
         <div class="bottom-buttons">
-            <Button aria-label="Prev" @click="currentPage--" :disabled="currentPage == 0">Prev</Button>
-            <Button aria-label="Next" @click="currentPage++" :disabled="currentPage == combinedData.length-1">Next</Button>
+            <Button label="Natrag" @click="currentPage--" :disabled="currentPage == 0"></Button>
+            <Button label="Naprijed" @click="currentPage++" :disabled="currentPage == combinedData.length-1"></Button>
         </div>
 
         <Dialog header="Quiz finished" v-model:visible="isFinished" draggable="false" :closable="false" modal :style="{ width: '350px' }">
@@ -128,11 +128,14 @@ onMounted(async () => {
 <style scoped>
 .container {
     margin-top: 30px;
-    height: 80vh;
+    height: 75vh;
 }
 ::v-deep .p-carousel-prev,
 ::v-deep .p-carousel-next {
     display: none;
+}
+:deep(.p-carousel-item) {
+    margin-bottom: 30px;
 }
 .top-buttons {
     display: flex;

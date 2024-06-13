@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-
-// to store in pinia store: logged in user data, all of the users quizzes (both created and played) but without the images, and the current quiz being played (with images)
-
 export const useUserStore = defineStore('user', {
     state: () => ({
         authenticated: false,
@@ -16,9 +13,6 @@ export const useUserStore = defineStore('user', {
     actions: {
         async fetchUserData() {
         try {
-            /* const response = await fetch('http://localhost:3000/auth/user-data', {
-            credentials: 'include',
-            }); */
             const response = await axios.get('http://localhost:3000/auth/user-data', { withCredentials: true });
             if (response.ok) {
             const data = await response.json();
@@ -32,9 +26,6 @@ export const useUserStore = defineStore('user', {
         },
         async checkAuthentication() {
         try {
-            /* const response = await fetch('http://localhost:3000/auth/check-auth', {
-            credentials: 'include',
-            }); */
             const response = await axios.get('http://localhost:3000/auth/check-auth', { withCredentials: true });
             if (response.ok) {
             const data = await response.json();

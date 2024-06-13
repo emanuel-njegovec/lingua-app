@@ -84,6 +84,15 @@ ul {
     width: 100%; 
     box-shadow: 0px -2px 10px 0px rgba(0,0,0,0.1);  
 }
+:deep(.bottom-btns .p-card-body) {
+    width: 100%;
+}
+:deep(.bottom-btns .p-card-content) {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
 @media (min-width: 768px) {
     ul {
         width: 800px;

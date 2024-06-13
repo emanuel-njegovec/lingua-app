@@ -52,7 +52,7 @@ const onTabChange = (e) => {
     bottom: 0;
     height: 75px;
     z-index: 1000;
-    background-color: var(--surface-a); /* Background color */
+    box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.2), 0 -3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 .p-tabmenu {
     width: 100%;

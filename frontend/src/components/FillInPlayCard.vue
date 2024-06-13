@@ -78,13 +78,17 @@ const checkAnswer = async () => {
 </script>
 
 <style scoped>
-.p-card {
+:deep(.p-card) {
     margin-left: 10px;
     margin-right: 10px;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-right: 20px;
+    margin-left: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .container {
     height: 50vh;

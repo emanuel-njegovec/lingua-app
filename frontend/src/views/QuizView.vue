@@ -10,16 +10,16 @@
                             <InputText id="quiz_name" v-model="quizData.quiz_name" placeholder="Enter the name of the quiz" @input="handleInputChange" />
                             <label for="description"><h2>Opis kviza</h2></label>
                             <Textarea id="description" v-model="quizData.description" placeholder="Enter the description of the quiz" @input="handleInputChange" />
-                            <label for="difficulty"><h2>Difficulty: {{ quizData.difficulty }}</h2></label>
+                            <label for="difficulty"><h2>Težina: {{ quizData.difficulty }}</h2></label>
                             <Slider id="difficulty" v-model="quizData.difficulty" :min="1" :max="5" @change="handleInputChange" />
                         </div>
                     </template>
                 </Card>
                 <h1>Pitanja</h1>
                 <ul v-if="quizData">
-                    <QuestionListItem v-for="question in multipleChoice" :key="'multipleChoice-' + question.question_id" :question="question" @remove_question="removeItem('multipleChoice', question)"></QuestionListItem>
-                    <QuestionListItem v-for="question in writeIn" :key="'writeIn-' + question.question_id" :question="question" @remove_question="removeItem('writeIn', question)"></QuestionListItem>
-                    <QuestionListItem v-for="question in fillIn" :key="'fillIn-' + question.question_id" :question="question" @remove_question="removeItem('fillIn', question)"></QuestionListItem>
+                    <QuestionListItem class="card-itm" v-for="question in multipleChoice" :key="'multipleChoice-' + question.question_id" :question="question" @remove_question="removeItem('multipleChoice', question)"></QuestionListItem>
+                    <QuestionListItem class="card-itm" v-for="question in writeIn" :key="'writeIn-' + question.question_id" :question="question" @remove_question="removeItem('writeIn', question)"></QuestionListItem>
+                    <QuestionListItem class="card-itm" v-for="question in fillIn" :key="'fillIn-' + question.question_id" :question="question" @remove_question="removeItem('fillIn', question)"></QuestionListItem>
                 </ul>
             </div>
             <Card class="quiz-edit-buttons">
@@ -61,7 +61,7 @@ const quiz = ref({});
 const quizData = ref({
     quiz_name: '',
     description: '',
-    difficulty: 1
+    difficulty: '1'
 });
 const multipleChoice = ref({});
 const writeIn = ref({});
@@ -144,12 +144,12 @@ const handleInputChange = () => {
     width: 100%;
     margin-bottom: 200px;
 }
-
 :deep(.editing-card) {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin: 10px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 .edit-form {
     display: flex;
@@ -164,6 +164,9 @@ ul {
     flex-direction: column;
     gap: 1rem;
 }
+.card-itm {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
 .p-slider {
     width: 50%;
 }
@@ -175,6 +178,15 @@ ul {
     justify-content: center;
     gap: 10px;
     box-shadow: 0px -2px 10px 0px rgba(0,0,0,0.1);
+}
+:deep(.quiz-edit-buttons .p-card-body) {
+    width: 100%;
+}
+:deep(.quiz-edit-buttons .p-card-content) {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 }
 #quiz_name {
     width: 80%;

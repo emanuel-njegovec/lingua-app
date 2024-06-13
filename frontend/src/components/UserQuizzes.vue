@@ -48,7 +48,6 @@ onMounted(async () => {
     try {
         const response = await axios.get(`${API_URL}/quiz/all/${languageStore.language}`, { withCredentials: true });
         quizzes.value = response.data;
-        console.log(quizzes.value);
     } catch (error) {
         console.error(error);
     }
@@ -58,12 +57,12 @@ const sortKey = ref();
 const sortOrder = ref();
 const sortField = ref();
 const sortOptions = ref([
-    { label: 'Rating Ascending', value: { field: 'average_rating', order: 1 } },
-    { label: 'Rating Descending', value: { field: 'average_rating', order: -1 } },
-    { label: 'Difficulty Ascending', value: { field: 'difficulty', order: 1 } },
-    { label: 'Difficulty Descending', value: { field: 'difficulty', order: -1 } },
-    { label: 'Date Ascending', value: { field: 'created_at', order: 1 } },
-    { label: 'Date Descending', value: { field: 'created_at', order: -1 } }
+    { label: 'po ocjeni - silazno', value: { field: 'average_rating', order: 1 } },
+    { label: 'po ocjeni - uzlazno', value: { field: 'average_rating', order: -1 } },
+    { label: 'po težini - silazno', value: { field: 'difficulty', order: 1 } },
+    { label: 'po težini - uzlazno', value: { field: 'difficulty', order: -1 } },
+    { label: 'po datumu stvaranja - silazno', value: { field: 'created_at', order: 1 } },
+    { label: 'po datumu stvaranja - uzlazno', value: { field: 'created_at', order: -1 } }
 ]);
 
 const onSortChange = (event) => {

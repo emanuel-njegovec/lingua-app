@@ -5,15 +5,17 @@ const app = express();
 const passport = require('passport');
 const session = require('express-session');
 const cors = require('cors');
+const { createDBIfNotExists } = require('./db.js');
 require('./auth.js');
 
 const authRouter = require('./routes/authRouter');
-const apiRouter = require('./routes/apiRouter');
 const quizRouter = require('./routes/quizRouter');
 const questionRouter = require('./routes/questionRouter');
 const statsRouter = require('./routes/statsRouter');
 
 const PORT = 3000;
+
+createDBIfNotExists();
 
 app.use(bodyParser.json());
 
@@ -37,7 +39,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRouter);
-app.use('/api', apiRouter);
 app.use('/quiz', quizRouter);
 app.use('/question', questionRouter);
 app.use('/stats', statsRouter);

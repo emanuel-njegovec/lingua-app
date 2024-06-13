@@ -4,12 +4,12 @@
             <div class="quiz-item-content">
                 <h2>{{ quiz.quiz_name }}</h2>
                 <p>{{ quiz.description }}</p>
-                <p>Last score: {{ quiz.correct_answers }} / {{ quiz.correct_answers + quiz.incorrect_answers }}</p>
-                <p>Last played at: {{ formatDate(quiz.started_at) }}</p>
+                <p>Posljednji rezultat: {{ quiz.correct_answers }} / {{ quiz.correct_answers + quiz.incorrect_answers }}</p>
+                <p>Posljednje rješavano: {{ formatDate(quiz.started_at) }}</p>
             </div>
             <div class="quiz-item-buttons">
-                <Button aria-label="Start" @click="playQuiz">Play again</Button>
-                <Button aria-label="Info" @click="displayInfo = true">View more info</Button>
+                <Button label="Pokreni ponovno" @click="playQuiz"></Button>
+                <Button label="Više informacija" @click="displayInfo = true"></Button>
             </div>
             
             <Dialog v-model:visible="displayInfo" modal draggable="false" header="History" @hide="displayInfo = false" :style="{ width: '900px' }">
@@ -87,11 +87,16 @@ const playQuiz = () => {
     padding: 1rem;
 
 }
+.quiz-item-content {
+    flex: 3;
+}
 .quiz-item-buttons {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 10px;
+    flex: 1;
+    margin-left: 10px;
 }
 
 

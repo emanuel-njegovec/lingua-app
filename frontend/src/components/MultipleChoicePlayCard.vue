@@ -60,16 +60,16 @@ const checkAnswer = (index) => {
         console.log('Correct');
         message.value = {
             severity: 'success',
-            summary: 'Correct',
-            detail: 'Correct answer'
+            summary: 'Točan odgovor!',
+            detail: 'Točan odgovor!'
         };
         emit('question-correct');
     } else {
         console.log('Incorrect');
         message.value = {
             severity: 'error',
-            summary: 'Incorrect',
-            detail: 'Incorrect answer'
+            summary: 'Netočan odgovor',
+            detail: 'Netočan odgovor'
         };
         emit('question-incorrect');
     }
@@ -88,13 +88,17 @@ function shuffleArray(array) {
 </script>
 
 <style scoped>
-.p-card {
+:deep(.p-card) {
     margin-left: 10px;
     margin-right: 10px;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-right: 20px;
+    margin-left: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .container {
     height: 50vh;
@@ -111,7 +115,7 @@ function shuffleArray(array) {
     justify-content: center;
 }
 .highlighted {
-    background-color: #57ec95;
+    background-color: #4f46e5;
 }
 
 </style>
