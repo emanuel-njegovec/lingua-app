@@ -14,11 +14,11 @@
             
             <Dialog v-model:visible="displayInfo" modal draggable="false" header="History" @hide="displayInfo = false" :style="{ width: '900px' }">
                 <DataTable :value="history" :sortField="'started_at'" :sortOrder="-1">
-                    <Column field="started_at" header="Started at" :sortable="true"></Column>
-                    <Column field="completed_at" header="Completed at"></Column>
-                    <Column field="correct_answers" header="Correct answers"></Column>
-                    <Column field="incorrect_answers" header="Incorrect answers"></Column>
-                    <Column field="score" header="Score" :sortable="true"></Column>
+                    <Column field="started_at" header="Započeto" :sortable="true"></Column>
+                    <Column field="completed_at" header="Završeno"></Column>
+                    <Column field="correct_answers" header="Točni odgovori"></Column>
+                    <Column field="incorrect_answers" header="Netočni odgovori"></Column>
+                    <Column field="score" header="Rezultat" :sortable="true"></Column>
                 </DataTable>
             </Dialog>
         </template>

@@ -29,6 +29,8 @@ const props = defineProps({
     quiz: Object
 });
 
+//const created_at = ref(formatDate(props.quiz.created_at));
+console.log(formatDate(props.quiz.created_at));
 const rating = computed(() => props.quiz.average_rating);
 
 const playQuiz = () => {

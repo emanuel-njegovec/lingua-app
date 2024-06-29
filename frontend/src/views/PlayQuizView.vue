@@ -2,6 +2,11 @@
     <div class="container">
         <div class="top-buttons">
             <Button class="quit-button" label="Odustani" @click="quitQuiz" severity="danger"></Button>
+            <Card>
+                <template #content>
+                    <h2>Odgovorena pitanja: {{ correctAnswers + incorrectAnswers }} / {{ combinedData.length }}</h2>
+                </template>
+            </Card>
             <div v-tooltip="{ value: 'Odgovorite na sva pitanja' }">
                 <Button label="Završi rješavanje" :disabled="correctAnswers + incorrectAnswers < combinedData.length" @click="finishQuiz"></Button>
             </div>
@@ -52,6 +57,7 @@
 import Carousel from 'primevue/carousel';
 import Dialog from 'primevue/dialog';
 import Rating from 'primevue/rating';
+import Card from 'primevue/card';
 import MultipleChoicePlayCard from '../components/MultipleChoicePlayCard.vue';
 import WriteInPlayCard from '../components/WriteInPlayCard.vue';
 import FillInPlayCard from '../components/FillInPlayCard.vue';

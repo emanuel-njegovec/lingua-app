@@ -9,10 +9,10 @@
                         <InputText v-model="answer" :disabled="isDisabled" @keyup.enter="checkAnswer"></InputText>
                         <Button @click="checkAnswer" :disabled="isDisabled" label="Provjeri"></Button>
                     </div>
-                    <ProgressSpinner v-if="isLoading" />
                     <transition-group name="p-message" tag="div">
                         <Message v-if="isDisabled" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
                     </transition-group>
+                    <ProgressSpinner v-if="isLoading" style="width: 50px; height: 50px; margin-top: 30px;" stroke-width="7"/>
                 </div>
             </template>    
         </Card>

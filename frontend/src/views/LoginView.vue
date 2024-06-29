@@ -7,7 +7,7 @@
             </template>
             <template #content>
                 <p>Kliknite na donji gumb za prijavu preko Google-a</p>
-                <Button label="Login with Google" icon="pi pi-google" iconPos="left" @click="googleLogin" />
+                <Button label="Prijava" icon="pi pi-google" iconPos="left" @click="googleLogin" />
             </template>
         </Card>
     </div>

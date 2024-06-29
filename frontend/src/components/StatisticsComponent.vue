@@ -10,6 +10,9 @@ import axios from 'axios';
 import Chart from 'primevue/chart';
 //import { useLanguageStore } from '@/store';
 import { API_URL } from '@/config';
+import { useLanguageStore } from '@/store';
+
+const languageStore = useLanguageStore();
 
 const chartData = ref([]);
 
@@ -34,17 +37,18 @@ const prepareChartData = (data) => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/stats/user-quiz-results`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/stats/user-quiz-results/${languageStore.language}`, { withCredentials: true });
         const temp = prepareChartData(response.data);
         temp.sort((a, b) => new Date(a.date) - new Date(b.date));
         chartData.value = {
             labels: temp.map(item => item.date),
             datasets: [
                 {
-                    label: 'Score',
+                    label: 'Rezultat',
                     data: temp.map(item => item.totalAccuracy),
                     fill: false,
-                    borderColor: '#42A5F5'
+                    borderColor: '#42A5F5',
+                    tension: 0.3
                 }
             ]
         };

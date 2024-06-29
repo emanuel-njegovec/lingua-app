@@ -38,8 +38,9 @@ const goHome = () => {
 };
 
 const newQuiz = async () => {
+    const created_at = new Date().toISOString();
     try {
-        const response = await axios.post(`${API_URL}/quiz`, { lang: languageStore.language }, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/quiz`, { lang: languageStore.language, created_at: created_at }, { withCredentials: true });
         const quiz_id = response.data[0].quiz_id;
         router.push('/manage-quizzes/' + quiz_id);
     } catch (error) {

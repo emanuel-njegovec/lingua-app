@@ -85,10 +85,11 @@ watch(showStats, async (value) => {
                 labels: temp.map(item => item.date),
                 datasets: [
                     {
-                        label: 'Score',
+                        label: 'Prosječan rezultat korisnika',
                         data: temp.map(item => item.totalAccuracy),
                         fill: false,
-                        borderColor: '#42A5F5'
+                        borderColor: '#42A5F5',
+                        tension: 0.3
                     }
                 ]
             };

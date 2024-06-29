@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { fetchDataFromDB, pool } = require('../db');
+const authMiddleware = require('../authMiddleware');
+
+router.use(authMiddleware);
 
 const handleRequest = async (req, res, query, params) => {
-    if (req.isAuthenticated()) {
-        try {
-            const data = await fetchDataFromDB(query, params);
-            res.json(data);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            res.status(500).json({ error: error.message });
-        }
-    } else {
-        res.status(401).json({ error: 'User is not authenticated' });
+    try {
+        const data = await fetchDataFromDB(query, params);
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ error: error.message });
     }
 }
 
@@ -27,11 +26,11 @@ router.post('/save', async (req, res) => {
     handleRequest(req, res, query, params);
 });
 
-router.get('/user-quiz-results', async (req, res) => {
+router.get('/user-quiz-results/:lang', async (req, res) => {
     const query = `SELECT uqr.*
-                    FROM user_quiz_results uqr
-                    WHERE uqr.user_id=$1`;
-    const params = [req.user.id];
+                    FROM user_quiz_results uqr NATURAL JOIN quizzes q
+                    WHERE uqr.user_id=$1 AND q.lang=$2`;
+    const params = [req.user.id, req.params.lang];
     handleRequest(req, res, query, params);
 });
 
