@@ -2,17 +2,32 @@
     <div class="container">
         <div class="top-buttons">
             <Button class="quit-button" label="Odustani" @click="quitQuiz" severity="danger"></Button>
-            <div v-tooltip="{ value: 'Answer all the questions first' }">
+            <div v-tooltip="{ value: 'Odgovorite na sva pitanja' }">
                 <Button label="Završi rješavanje" :disabled="correctAnswers + incorrectAnswers < combinedData.length" @click="finishQuiz"></Button>
             </div>
         </div>
-        <Carousel :value="combinedData" v-if="combinedData[0] && combinedData[0].question_id" :page="currentPage" >
+        <Carousel
+            :value="combinedData"
+            v-if="combinedData[0] && combinedData[0].question_id"
+            :page="currentPage" >
             <template #item="question">
-                <MultipleChoicePlayCard v-if="question.data.q_type === 'multiple_choice'" class="question-card" :question="question.data" @question-correct="correctAnswers++" @question-incorrect="incorrectAnswers++">
+                <MultipleChoicePlayCard
+                    v-if="question.data.q_type === 'multiple_choice'"
+                    class="question-card" :question="question.data"
+                    @question-correct="correctAnswers++;"
+                    @question-incorrect="incorrectAnswers++;">
                 </MultipleChoicePlayCard>
-                <WriteInPlayCard v-if="question.data.q_type === 'write_in'" class="question-card" :question="question.data" @question-correct="correctAnswers++" @question-incorrect="incorrectAnswers++">
+                <WriteInPlayCard
+                    v-if="question.data.q_type === 'write_in'"
+                    class="question-card" :question="question.data"
+                    @question-correct="correctAnswers++;"
+                    @question-incorrect="incorrectAnswers++;">
                 </WriteInPlayCard>
-                <FillInPlayCard v-if="question.data.q_type === 'fill_in'" class="question-card" :question="question.data" @question-correct="correctAnswers++" @question-incorrect="incorrectAnswers++">
+                <FillInPlayCard
+                    v-if="question.data.q_type === 'fill_in'"
+                    class="question-card" :question="question.data"
+                    @question-correct="correctAnswers++;"
+                    @question-incorrect="incorrectAnswers++;">
                 </FillInPlayCard>
             </template>
         </Carousel>
@@ -41,7 +56,7 @@ import MultipleChoicePlayCard from '../components/MultipleChoicePlayCard.vue';
 import WriteInPlayCard from '../components/WriteInPlayCard.vue';
 import FillInPlayCard from '../components/FillInPlayCard.vue';
 import Button from 'primevue/button';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { API_URL } from '@/config';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/store';
@@ -50,6 +65,14 @@ import axios from 'axios';
 const router = useRouter();
 const route = useRoute();
 const param = route.params.quiz_id;
+
+const handleArrowKeys = (event) => {
+    if (event.key === 'ArrowLeft' && currentPage.value > 0) {
+        currentPage.value--;
+    } else if (event.key === 'ArrowRight' && currentPage.value < combinedData.value.length - 1) {
+        currentPage.value++;
+    }
+};
 
 const userStore = useUserStore();
 
@@ -108,6 +131,9 @@ const saveRating = async () => {
 }
 
 onMounted(async () => {
+
+    document.addEventListener('keydown', handleArrowKeys);
+
     try {
         const response = await axios.get(`${API_URL}/quiz/${param}`, { withCredentials: true });
         quiz.value = response.data;
@@ -120,6 +146,10 @@ onMounted(async () => {
     } catch (error) {
         console.error(error);
     }
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleArrowKeys);
 });
 
 
@@ -140,8 +170,10 @@ onMounted(async () => {
 .top-buttons {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-left: 10px;
     margin-right: 10px;
+    height: 50px;
 }
 .bottom-buttons {
     display: flex;

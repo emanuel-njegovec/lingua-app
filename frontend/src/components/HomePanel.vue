@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <Accordion :multiple="true">
+        <Accordion :multiple="true" :active-index="[0,1]">
             <AccordionTab header="Odigrani kvizovi">
                 <div v-if="quizzes">
                     <ul>

@@ -4,6 +4,7 @@
             <FileUpload mode="basic" auto="true" name="photo" :url="uploadUrl" customUpload @uploader="uploadHandler" withCredentials @upload="onUpload" accept="image/*" :maxFileSize="1000000" chooseLabel="Dodaj sliku">
             </FileUpload>
             <Image v-if="imageUrl" :src="imageUrl" width="400"/>
+            <Button v-if="imageUrl" label="Ukloni sliku" @click="deleteImage" severity="danger"></Button>
             <FloatLabel>
                 <Textarea id="qtext" v-model="questionData.question_text" @input="handleInputChange" autoResize rows="1"/>
                 <label for="qtext">Pitanje</label>
@@ -94,6 +95,15 @@ const uploadHandler = async ({ files }) => {
     } catch (error) {
         console.error(error);
     
+    }
+}
+
+const deleteImage = async () => {
+    try {
+        await axios.post(`${API_URL}/question/delete-image/${router.currentRoute.value.params.question_id}`, { image_url: imageUrl.value }, { withCredentials: true });
+        imageUrl.value = '';
+    } catch (error) {
+        console.error(error);
     }
 }
 

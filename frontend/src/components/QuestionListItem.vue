@@ -1,10 +1,15 @@
 <template>
     <Card v-if="question">
+        <template #header>
+            <h3 v-if="question.q_type == 'multiple_choice'">Pitanje s ponuđenim odgovorima</h3>
+            <h3 v-if="question.q_type == 'write_in'">Pitanje s upisivanjem odgovora</h3>
+            <h3 v-if="question.q_type == 'fill_in'">Pitanje s nadopunjavanjem</h3>
+        </template>
         <template #content>
             <div class="question-item-content">
-                <h2>{{ question.question_text }}</h2>
                 <Image v-if="question.image_url" :src="question.image_url" alt="Question Image" width="250"/>
-                <p>{{ question.correct_ans }}</p>
+                <p style="font-weight: bold;">Pitanje: {{ question.question_text }}</p>
+                <p>Odgovor: {{ question.correct_ans }}</p>
             </div>
             <div class="question-item-btns">
                 <Button label="Uredi" @click="getQuestion"></Button>

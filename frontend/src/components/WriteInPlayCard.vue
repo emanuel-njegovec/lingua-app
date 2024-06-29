@@ -6,9 +6,10 @@
                     <Image :src="question.image_url" width="400"></Image>
                     <h2>{{ question.question_text }}</h2>
                     <div class="answer-component">
-                        <InputText v-model="answer" :disabled="isDisabled"></InputText>
-                        <Button @click="checkAnswer" :disabled="isDisabled">Check</Button>
+                        <InputText v-model="answer" :disabled="isDisabled" @keyup.enter="checkAnswer"></InputText>
+                        <Button @click="checkAnswer" :disabled="isDisabled" label="Provjeri"></Button>
                     </div>
+                    <ProgressSpinner v-if="isLoading" />
                     <transition-group name="p-message" tag="div">
                         <Message v-if="isDisabled" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
                     </transition-group>
@@ -23,10 +24,14 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
+import ProgressSpinner from 'primevue/progressspinner';
 import { ref, defineProps, defineEmits } from 'vue';
 import Image from 'primevue/image';
+import { API_URL } from '@/config';
+import axios from 'axios';
 
 const isDisabled = ref(false);
+const isLoading = ref(false);
 const message = ref({});
 
 // eslint-disable-next-line
@@ -37,26 +42,37 @@ const props = defineProps({
 const emit = defineEmits(['question-correct, question-incorrect']);
 
 const answer = ref('');
+const correct_answer = ref(props.question.correct_ans);
 
-const checkAnswer = () => {
-    if (answer.value === props.question.correct_ans) {
-        console.log('Correct');
-        message.value = {
-            severity: 'success',
-            summary: 'Correct',
-            detail: 'Correct answer'
-        };
-        emit('question-correct');
-    } else {
-        console.log('Incorrect');
-        message.value = {
-            severity: 'error',
-            summary: 'Incorrect',
-            detail: 'Incorrect answer'
-        };
-        emit('question-incorrect');
+const checkAnswer = async () => {
+    try {
+        isLoading.value = true;
+        const response = await axios.post(`${API_URL}/question/check-answer-write-in/en`, {
+            user_answer: answer.value,
+            correct_answer: correct_answer.value,
+        }, { withCredentials: true });
+        console.log(response.data);
+        if (response.data.result === 'correct') {
+            message.value = {
+                severity: 'success',
+                summary: 'Točan odgovor!',
+                detail: response.data.explanation
+            };
+            emit('question-correct');
+        } else {
+            message.value = {
+                severity: 'error',
+                summary: `Netočan odgovor! ${response.data.explanation}`,
+                detail: response.data.explanation
+            };
+            emit('question-incorrect');
+        }
+        isDisabled.value = true;
+    } catch (error) {
+        console.error(error);
+    } finally {
+        isLoading.value = false;
     }
-    isDisabled.value = true;
 };
 
 </script>

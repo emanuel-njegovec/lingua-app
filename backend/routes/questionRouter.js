@@ -150,6 +150,16 @@ router.post('/upload-image/:question_id', upload.single('photo'), async (req, re
             res.status(400).json({ error: 'No file uploaded' });
             return;
         }
+        //delete previous image
+        const query = `SELECT image_url FROM questions WHERE question_id=$1`;
+        const params = [req.params.question_id];
+        const { rows } = await pool.query(query, params);
+        if (rows[0].image_url) {
+            const filePath = rows[0].image_url.replace('https://storage.googleapis.com/lingua-storage.appspot.com/', '');
+            const file = bucket.file(filePath);
+            await file.delete();
+        }
+        //----------------------------------
         const blob = bucket.file(req.file.originalname);
         const blobStream = blob.createWriteStream({
             resumable: false,
@@ -178,13 +188,81 @@ router.post('/upload-image/:question_id', upload.single('photo'), async (req, re
     }
 });
 
-router.post('/check-answer', async (req, res) => {
+router.post('/delete-image/:question_id', async (req, res) => {
+    if (req.isAuthenticated()) {
+        const fileUrl = req.body.image_url;
+        try {
+            console.log('File URL:', fileUrl);
+            const filePath = fileUrl.replace('https://storage.googleapis.com/lingua-storage.appspot.com/', '');
+            const file = bucket.file(filePath);
+            await file.delete();
+            await pool.query(
+                `UPDATE questions SET image_url=$1 WHERE question_id=$2`,
+                [null, req.params.question_id]
+            );
+            res.status(200).send('File deleted successfully');
+        } catch (error) {
+            console.error('Error deleting file:', error);
+            res.status(500).send('Error deleting file');
+        }
+    } else {
+        res.status(401).json({ error: 'User is not authenticated' });
+    }
+});
+
+router.post('/check-answer-write-in/:lang', async (req, res) => {
     if (req.isAuthenticated()) {
         const { user_answer, correct_answer } = req.body;
+        let prompt;
+        if (req.params.lang == 'en') {
+            prompt = `You are an english language expert providing feedback on quiz questions for a language learning application where the user is learning english.
+                        First check if the user's answer is in the same language as the correct answer. If not, return incorrect without providing an explanation.
+                        Then valuate if the user's answer is correct or incorrect.
+                        If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
+                        Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.`;
+        } else if (req.params.lang == 'kr') {
+            prompt = `You are a korean language expert providing feedback on quiz questions for a language learning application where the user is learning korean.
+                        First check if the given answer is in korean. If not, return incorrect without providing an explanation.
+                        If the answer is in korean then evaluate if it's correct or incorrect.
+                        If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
+                        Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian.`;
+        }
         const response = await openai.chat.completions.create({
             messages: [
-                { role: 'system', content: 'You are a language expert providing feedback on quiz questions for a language learning application. Provide every response in the form of a JSON object with two fields: result which can be either correct, incorrect or partially correct and explanation which is a brief explanation if the answer is incorrect. Provide the explanation in Croatian and pretend you are talking to the user directly.' },
-                { role: 'user', content: `Evaluate the user's answer ${user_answer} with the correct answer ${correct_answer}` },
+                { role: 'system', content: prompt },
+                { role: 'user', content: `Evaluate the answer ${user_answer} with the correct answer ${correct_answer}. Do not reveal the correct answer in the response.` },
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' },
+        });
+        console.log('Response:', response.choices[0].message.content);
+        res.json(JSON.parse(response.choices[0].message.content));
+    } else {
+        res.status(401).json({ error: 'User is not authenticated' });
+    }
+});
+
+router.post('/check-answer/:lang', async (req, res) => {
+    if (req.isAuthenticated()) {
+        const { user_answer, correct_answer, question } = req.body;
+        let prompt;
+        if (req.params.lang == 'en') {
+            prompt = `You are an english language expert providing feedback on quiz questions for a language learning application where the user is learning english.
+                        First check if the given answer is in english. If not, return incorrect without providing an explanation.
+                        If the answer is in english then evaluate if it's correct or incorrect.
+                        If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
+                        Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.`;
+        } else if (req.params.lang == 'kr') {
+            prompt = `You are a korean language expert providing feedback on quiz questions for a language learning application where the user is learning korean.
+                        First check if the given answer is in korean. If not, return incorrect without providing an explanation.
+                        If the answer is in korean then evaluate if it's correct or incorrect.
+                        If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
+                        Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian.`;
+        }
+        const response = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: prompt },
+                { role: 'user', content: `Evaluate the answer ${user_answer} with the correct answer ${correct_answer} within the context of the entire sentence: ${question}. Do not reveal the correct answer in the response.` },
             ],
             model: 'gpt-4o',
             response_format: { type: 'json_object' },

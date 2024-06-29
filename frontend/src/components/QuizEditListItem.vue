@@ -8,9 +8,18 @@
             <div class="list-item-btns">
                 <Button label="Uredi" @click="getQuiz"></Button>
                 <Button label="Pregled statistike" @click="showStats = true"></Button>
-                <Button label="Obriši" severity="danger" @click="deleteQuiz"></Button>
+                <Button label="Obriši" severity="danger" @click="deleteDialog = true"></Button>
             </div>
-            <Dialog header="Quiz stats" v-model:visible="showStats" modal="true" :style="{ width: '800px' }">
+            <Dialog header="Obrisati kviz?" v-model:visible="deleteDialog" modal="true">
+                <p>Jesti li sigurni da želite obrisati kviz?</p>
+                <div class="p-fluid">
+                    <div class="p-field">
+                        <Button label="Da" @click="deleteQuiz" />
+                        <Button label="Ne" @click="deleteDialog = false" />
+                    </div>
+                </div>
+            </Dialog>
+            <Dialog header="Statistika kviza" v-model:visible="showStats" modal="true" :style="{ width: '800px' }">
                 <Chart type="line" :data="data" />
                 <p>Prosječno vrijeme rješavanja kviza: {{ average_time_spent.toFixed(1) }}s</p>
             </Dialog>
@@ -45,6 +54,7 @@ const getQuiz = () => {
 
 
 const showStats = ref(false);
+const deleteDialog = ref(false);
 
 const prepareChartData = (data) => {
     const groupedByDate = data.reduce((acc, curr) => {
@@ -92,6 +102,7 @@ watch(showStats, async (value) => {
 const deleteQuiz = async () => {
     try {
         await axios.delete(`${API_URL}/quiz/${props.quiz.quiz_id}`, { withCredentials: true });
+        deleteDialog.value = false;
         emit('remove', props.quiz.quiz_id);
     } catch (error) {
         console.error(error);
@@ -115,5 +126,9 @@ const deleteQuiz = async () => {
     justify-content: space-around;
     align-items: center;
     padding: 1rem;
+}
+.p-field {
+    display: flex;
+    gap: 1rem;
 }
 </style>
