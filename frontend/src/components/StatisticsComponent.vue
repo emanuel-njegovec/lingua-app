@@ -37,7 +37,7 @@ const prepareChartData = (data) => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${API_URL}/stats/user-quiz-results/${languageStore.language}`, { withCredentials: true });
+        const response = await axios.get(`${API_URL}/stats/user-quiz-results-all/${languageStore.language}`, { withCredentials: true });
         const temp = prepareChartData(response.data);
         temp.sort((a, b) => new Date(a.date) - new Date(b.date));
         chartData.value = {

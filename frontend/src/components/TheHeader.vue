@@ -106,4 +106,13 @@ onMounted(() => {
 :deep(.p-card-body) {
     padding: 0;
 }
+
+@media (max-width: 768px) {
+    .header-content h2 {
+        font-size: 18px;
+    }
+    .btns {
+        gap: 10px;
+    }
+}
 </style>

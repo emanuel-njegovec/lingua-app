@@ -2,9 +2,9 @@
     <div class="container">
         <div class="top-buttons">
             <Button class="quit-button" label="Odustani" @click="quitQuiz" severity="danger"></Button>
-            <Card>
+            <Card class="counter-card">
                 <template #content>
-                    <h2>Odgovorena pitanja: {{ correctAnswers + incorrectAnswers }} / {{ combinedData.length }}</h2>
+                    <h2 class="question-counter">{{ correctAnswers + incorrectAnswers }} / {{ combinedData.length }}</h2>
                 </template>
             </Card>
             <div v-tooltip="{ value: 'Odgovorite na sva pitanja' }">
@@ -173,6 +173,12 @@ onBeforeUnmount(() => {
 :deep(.p-carousel-item) {
     margin-bottom: 30px;
 }
+:deep(.counter-card) {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .top-buttons {
     display: flex;
     justify-content: space-between;
@@ -193,4 +199,10 @@ onBeforeUnmount(() => {
     margin-top: 10px;
 }
 
+@media (max-width: 768px) {
+    .question-counter {
+        font-size: 18px;
+
+    }
+}
 </style>

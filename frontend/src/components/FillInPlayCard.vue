@@ -3,7 +3,7 @@
         <Card v-if="question">
             <template #content>
                 <div class="card-content">
-                    <Image :src="question.image_url" width="400"></Image>
+                    <Image class="img" :src="question.image_url" width="400"></Image>
                     <h2>
                         <span v-for="(word, index) in text_split" :key="index">
                             <InputText v-if="word === correct_answer" :disabled="isDisabled" v-model="answer" @keyup.enter="checkAnswer"/>
@@ -88,8 +88,6 @@ const checkAnswer = async () => {
 
 <style scoped>
 :deep(.p-card) {
-    margin-left: 10px;
-    margin-right: 10px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -102,5 +100,12 @@ const checkAnswer = async () => {
 .container {
     height: 50vh;
 }
-
+@media (max-width: 768px) {
+    :deep(img) {
+        width: 300px;
+    }
+    :deep(.p-inputtext) {
+        width: 100px;
+    }
+}
 </style>

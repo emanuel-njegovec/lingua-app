@@ -43,11 +43,13 @@ const emit = defineEmits(['question-correct, question-incorrect']);
 
 const answer = ref('');
 const correct_answer = ref(props.question.correct_ans);
+const question_text = ref(props.question.question_text);
 
 const checkAnswer = async () => {
     try {
         isLoading.value = true;
         const response = await axios.post(`${API_URL}/question/check-answer-write-in/en`, {
+            question_text: question_text.value,
             user_answer: answer.value,
             correct_answer: correct_answer.value,
         }, { withCredentials: true });

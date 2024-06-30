@@ -77,7 +77,7 @@ ul {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    
+    margin-bottom: 60px;
 }
 :deep(.bottom-btns) {
     position: fixed;

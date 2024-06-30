@@ -26,7 +26,7 @@ router.post('/save', async (req, res) => {
     handleRequest(req, res, query, params);
 });
 
-router.get('/user-quiz-results/:lang', async (req, res) => {
+router.get('/user-quiz-results-all/:lang', async (req, res) => {
     const query = `SELECT uqr.*
                     FROM user_quiz_results uqr NATURAL JOIN quizzes q
                     WHERE uqr.user_id=$1 AND q.lang=$2`;
