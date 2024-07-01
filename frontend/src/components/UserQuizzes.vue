@@ -66,6 +66,7 @@ const sortOptions = ref([
 ]);
 
 const onSortChange = (event) => {
+    console.log(quizzes.value);
     const { field, order } = event.value;
     const sortedQuizzes = [...quizzes.value].sort((a, b) => {
         if (order === 1) {

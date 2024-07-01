@@ -17,6 +17,10 @@
                         <Message v-if="isDisabled" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
                     </transition-group>
                     <ProgressSpinner v-if="isLoading" style="width: 50px; height: 50px; margin-top: 30px;" stroke-width="7"/>
+                    <div class="correct-answer">
+                        <Button v-if="!showAnswer" @click="showAnswer = true" label="Točan odgovor"></Button>
+                        <h3 v-if="showAnswer">{{ correct_answer }}</h3>
+                    </div>
                 </div>
             </template>
         </Card>
@@ -30,6 +34,7 @@ import Button from 'primevue/button';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import { ref, defineProps, defineEmits } from 'vue';
+import { useLanguageStore } from '@/store';
 import axios from 'axios';
 import { API_URL } from '@/config';
 import Image from 'primevue/image';
@@ -42,6 +47,8 @@ const props = defineProps({
 const message = ref({});
 const isDisabled = ref(false);
 const isLoading = ref(false);
+const showAnswer = ref(false);
+const languageStore = useLanguageStore();
 
 // eslint-disable-next-line
 const emit = defineEmits(['question-correct, question-incorrect']);
@@ -53,8 +60,9 @@ const answer = ref('');
 
 const checkAnswer = async () => {
     try {
+        console.log(languageStore.language);
         isLoading.value = true;
-        const response = await axios.post(`${API_URL}/question/check-answer/en`, {
+        const response = await axios.post(`${API_URL}/question/check-answer/${languageStore.language}`, {
             user_answer: answer.value,
             correct_answer: correct_answer.value,
             question: props.question.question_text
@@ -99,6 +107,9 @@ const checkAnswer = async () => {
 }
 .container {
     height: 50vh;
+}
+.correct-answer {
+margin-top: 20px;
 }
 @media (max-width: 768px) {
     :deep(img) {

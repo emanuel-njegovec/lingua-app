@@ -194,22 +194,18 @@ router.post('/check-answer-write-in/:lang', async (req, res) => {
     console.log(question_text, user_answer, correct_answer);
     let prompt;
     if (req.params.lang == 'en') {
-        prompt = `The word that needs to be translated is: "${question_text}". The correct translation is "${correct_answer}". The user's translation is "${user_answer}".
-                    First check if the user's translation is in the same language as the correct translation. If not, return incorrect without providing an explanation.
-                    Then valuate if the user's translation is correct or incorrect.
-                    If the translation is incorrect give a brief explanation of why and do not reveal the correct answer.
-                    Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.`;
+        prompt = `You are an english language expert providing feedback on quiz questions for a language learning application where the user is learning english.`;
     } else if (req.params.lang == 'kr') {
-        prompt = `You are a korean language expert providing feedback on quiz questions for a language learning application where the user is learning korean.
-                    First check if the given answer is in korean. If not, return incorrect without providing an explanation.
-                    If the answer is in korean then evaluate if it's correct or incorrect.
-                    If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
-                    Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian.`;
+        prompt = `You are a korean language expert providing feedback on quiz questions for a language learning application where the user is learning korean.`;
     }
     const response = await openai.chat.completions.create({
         messages: [
-            { role: 'system', content: `You are an english language expert providing feedback on quiz questions for a language learning application where the user is learning english.` },
-            { role: 'user', content: prompt },
+            { role: 'system', content: prompt },
+            { role: 'user', content: `The word that needs to be translated is: "${question_text}". The correct translation is "${correct_answer}". The user's translation is "${user_answer}".
+                                        First check if the user's translation is in the same language as the correct translation. If not, return incorrect without providing an explanation.
+                                        Then valuate if the user's translation is correct or incorrect.
+                                        If the translation is incorrect give a brief explanation of why and do not reveal the correct answer.
+                                        Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.` },
         ],
         model: 'gpt-4o',
         response_format: { type: 'json_object' },
@@ -221,23 +217,26 @@ router.post('/check-answer-write-in/:lang', async (req, res) => {
 router.post('/check-answer/:lang', async (req, res) => {
     const { user_answer, correct_answer, question } = req.body;
     let prompt;
+    let prompt2;
     if (req.params.lang == 'en') {
-        prompt = `Evalute the user's answer: "${user_answer}" compared to the correct answer: "${correct_answer}" within the context of the entire sentence: "${question}".
+        prompt = `You are an english language expert providing feedback on quiz questions for a language learning application where the user is learning english.`;
+        prompt2 = `Evalute the user's answer: "${user_answer}" compared to the correct answer: "${correct_answer}" within the context of the entire sentence: "${question}".
                     First check if the user's answer is in english. If not, return incorrect without providing an explanation.
                     If the answer is in english then evaluate if it's correct or incorrect.
                     If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
-                    Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.`;
+                    Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.`
     } else if (req.params.lang == 'kr') {
-        prompt = `You are a korean language expert providing feedback on quiz questions for a language learning application where the user is learning korean.
-                    First check if the given answer is in korean. If not, return incorrect without providing an explanation.
+        prompt = `You are a korean language expert providing feedback on quiz questions for a language learning application where the user is learning korean.`;
+        prompt2 = `Evalute the user's answer: "${user_answer}" compared to the correct answer: "${correct_answer}".
+                    First check if the user's answer is in korean. If not, return incorrect without providing an explanation.
                     If the answer is in korean then evaluate if it's correct or incorrect.
                     If the answer is incorrect give a brief explanation of why and do not reveal the correct answer.
-                    Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian.`;
+                    Provide every response as a JSON with the following elements: result which is one of (correct, incorrect) and explanation in Croatian without ever including the correct answer in the explanation.`
     }
     const response = await openai.chat.completions.create({
         messages: [
-            { role: 'system', content: `You are an english language expert providing feedback on quiz questions for a language learning application where the user is learning english.` },
-            { role: 'user', content: prompt },
+            { role: 'system', content: prompt },
+            { role: 'user', content: prompt2 },
         ],
         model: 'gpt-4o',
         response_format: { type: 'json_object' },

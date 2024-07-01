@@ -9,6 +9,10 @@
                         <InputText v-model="answer" :disabled="isDisabled" @keyup.enter="checkAnswer"></InputText>
                         <Button @click="checkAnswer" :disabled="isDisabled" label="Provjeri"></Button>
                     </div>
+                    <div class="correct-answer">
+                        <Button v-if="!showAnswer" @click="showAnswer = true" label="Točan odgovor"></Button>
+                        <h3 v-if="showAnswer">{{ correct_answer }}</h3>
+                    </div>
                     <transition-group name="p-message" tag="div">
                         <Message v-if="isDisabled" :severity="message.severity" :closable="false">{{ message.summary }}</Message>
                     </transition-group>
@@ -26,6 +30,7 @@ import Button from 'primevue/button';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import { ref, defineProps, defineEmits } from 'vue';
+import { useLanguageStore } from '@/store';
 import Image from 'primevue/image';
 import { API_URL } from '@/config';
 import axios from 'axios';
@@ -33,6 +38,9 @@ import axios from 'axios';
 const isDisabled = ref(false);
 const isLoading = ref(false);
 const message = ref({});
+const showAnswer = ref(false);
+
+const languageStore = useLanguageStore();
 
 // eslint-disable-next-line
 const props = defineProps({
@@ -48,7 +56,8 @@ const question_text = ref(props.question.question_text);
 const checkAnswer = async () => {
     try {
         isLoading.value = true;
-        const response = await axios.post(`${API_URL}/question/check-answer-write-in/en`, {
+        console.log(languageStore.language);
+        const response = await axios.post(`${API_URL}/question/check-answer-write-in/${languageStore.language}`, {
             question_text: question_text.value,
             user_answer: answer.value,
             correct_answer: correct_answer.value,
@@ -101,5 +110,7 @@ const checkAnswer = async () => {
     flex-direction: column;
     justify-content: center;
 }
-
+.correct-answer {
+margin-top: 20px;
+}
 </style>
